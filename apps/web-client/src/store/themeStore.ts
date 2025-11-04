@@ -12,7 +12,7 @@ export const useThemeStore = create<ThemeStore>((set) => ({
   toggleTheme: () => {
     set((state) => {
       const newTheme = state.theme === "light" ? "dark" : "light";
-      console.log("Theme toggling from", state.theme, "to", newTheme);
+      console.log("🎨 Theme toggling from", state.theme, "to", newTheme);
 
       localStorage.setItem("theme", newTheme);
 
@@ -23,7 +23,8 @@ export const useThemeStore = create<ThemeStore>((set) => ({
         document.documentElement.classList.remove("dark");
       }
 
-      console.log("Document classes:", document.documentElement.className);
+      console.log("🎨 Document classes:", document.documentElement.className);
+      console.log("🎨 localStorage theme:", localStorage.getItem("theme"));
 
       return { theme: newTheme };
     });
@@ -31,11 +32,13 @@ export const useThemeStore = create<ThemeStore>((set) => ({
 
   initTheme: () => {
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-      .matches
-      ? "dark"
-      : "light";
-    const theme = savedTheme || systemTheme;
+    // Default to light theme instead of system preference
+    const theme = savedTheme || "light";
+
+    console.log("🎨 initTheme called", {
+      savedTheme,
+      finalTheme: theme,
+    });
 
     // Update document class
     if (theme === "dark") {
@@ -43,6 +46,11 @@ export const useThemeStore = create<ThemeStore>((set) => ({
     } else {
       document.documentElement.classList.remove("dark");
     }
+
+    console.log(
+      "🎨 Initial document classes:",
+      document.documentElement.className
+    );
 
     set({ theme });
   },

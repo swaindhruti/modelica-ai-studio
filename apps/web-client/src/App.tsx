@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
 import { useThemeStore } from "./store/themeStore";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { StudioPage } from "./pages/StudioPage";
@@ -31,10 +32,11 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route
-            path="/"
+            path="/studio"
             element={
               <ProtectedRoute>
                 <StudioPage />
@@ -48,7 +50,7 @@ function App() {
         position="top-right"
         toastOptions={{
           duration: 3000,
-          className: "dark:bg-gray-800 dark:text-white",
+          className: "dark:bg-dark-bg dark:text-dark-text brutal-border",
         }}
       />
     </QueryClientProvider>

@@ -187,16 +187,16 @@ export function StudioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-bg-light dark:bg-dark-bg">
       <Navbar />
 
       {/* Server Connection Status */}
       {historyError && (
-        <div className="bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800">
+        <div className="bg-accent-orange dark:bg-dark-accent brutal-border border-t-0 border-l-0 border-r-0 brutal-shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div className="flex items-center gap-2">
               <svg
-                className="h-5 w-5 text-red-600 dark:text-red-400"
+                className="h-5 w-5 text-border dark:text-dark-bg"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -208,10 +208,10 @@ export function StudioPage() {
                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                 />
               </svg>
-              <p className="text-sm text-red-800 dark:text-red-300">
+              <p className="text-sm text-border dark:text-dark-bg font-bold">
                 <strong>Cannot connect to backend server.</strong> Make sure the
                 server is running on{" "}
-                <code className="px-1 py-0.5 bg-red-100 dark:bg-red-800/30 rounded">
+                <code className="px-1 py-0.5 bg-bg-white dark:bg-dark-bg brutal-border">
                   http://localhost:3000
                 </code>
               </p>
@@ -224,15 +224,15 @@ export function StudioPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main generation form */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+            <div className="card-brutal">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h2 className="text-3xl font-black text-border dark:text-dark-text uppercase">
                   Create Generation
                 </h2>
                 <button
                   type="button"
                   onClick={handleClearForm}
-                  className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                  className="text-sm font-bold text-secondary dark:text-dark-primary hover:underline uppercase"
                 >
                   Clear Form
                 </button>
@@ -250,7 +250,7 @@ export function StudioPage() {
                 <div>
                   <label
                     htmlFor="prompt"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    className="block text-sm font-bold text-border dark:text-dark-text mb-2 uppercase"
                   >
                     Prompt *
                   </label>
@@ -262,14 +262,14 @@ export function StudioPage() {
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Describe what you want to generate..."
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="input-brutal w-full resize-none"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="style"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    className="block text-sm font-bold text-border dark:text-dark-text mb-2 uppercase"
                   >
                     Style
                   </label>
@@ -278,7 +278,7 @@ export function StudioPage() {
                     name="style"
                     value={style}
                     onChange={(e) => setStyle(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                    className="input-brutal w-full"
                   >
                     {STYLES.map((s) => (
                       <option key={s.value} value={s.value}>
@@ -292,12 +292,12 @@ export function StudioPage() {
                   <button
                     type="submit"
                     disabled={generateMutation.isPending}
-                    className="flex-1 flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed dark:focus:ring-offset-gray-800"
+                    className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {generateMutation.isPending ? (
-                      <>
+                      <span className="flex items-center justify-center gap-2">
                         <svg
-                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          className="animate-spin h-5 w-5"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
@@ -317,7 +317,7 @@ export function StudioPage() {
                           ></path>
                         </svg>
                         Generating...
-                      </>
+                      </span>
                     ) : (
                       "Generate"
                     )}
@@ -327,7 +327,7 @@ export function StudioPage() {
                     <button
                       type="button"
                       onClick={handleAbort}
-                      className="px-4 py-2 border border-red-300 dark:border-red-700 rounded-md shadow-sm text-sm font-medium text-red-700 dark:text-red-400 bg-white dark:bg-gray-900 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                      className="btn-secondary px-6"
                     >
                       Abort
                     </button>
@@ -335,17 +335,15 @@ export function StudioPage() {
                 </div>
 
                 {generateMutation.isError && !generateMutation.isPending && (
-                  <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
-                    <div className="flex">
-                      <div className="flex-1">
-                        <p className="text-sm text-red-800 dark:text-red-400">
-                          Generation failed. Please try again.
-                        </p>
-                      </div>
+                  <div className="brutal-border bg-accent-orange dark:bg-dark-accent p-4">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-bold text-border dark:text-dark-bg">
+                        Generation failed. Please try again.
+                      </p>
                       <button
                         type="button"
                         onClick={() => generateMutation.mutate()}
-                        className="ml-3 text-sm font-medium text-red-800 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300"
+                        className="text-sm font-bold text-border dark:text-dark-bg hover:underline uppercase"
                       >
                         Retry
                       </button>
@@ -357,26 +355,26 @@ export function StudioPage() {
 
             {/* Latest Generation Result */}
             {latestGeneration && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+              <div className="card-brutal bg-primary dark:bg-dark-primary">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <h3 className="text-2xl font-black text-border dark:text-dark-bg uppercase">
                     ✨ Latest Generation
                   </h3>
                   <button
                     onClick={() => setLatestGeneration(null)}
-                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    className="text-border dark:text-dark-bg hover:opacity-70 font-bold"
                     aria-label="Close result"
                   >
                     <svg
-                      className="h-5 w-5"
+                      className="h-6 w-6"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
+                      strokeWidth={3}
                     >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth={2}
                         d="M6 18L18 6M6 6l12 12"
                       />
                     </svg>
@@ -384,24 +382,24 @@ export function StudioPage() {
                 </div>
 
                 {latestGeneration.imageUrl ? (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <img
                       src={`http://localhost:3000${latestGeneration.imageUrl}`}
                       alt={latestGeneration.prompt}
-                      className="w-full rounded-lg shadow-md"
+                      className="w-full brutal-border brutal-shadow"
                     />
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      <p className="font-medium text-gray-900 dark:text-white mb-1">
-                        Prompt:
+                    <div className="text-sm text-border dark:text-dark-bg">
+                      <p className="font-black mb-1 uppercase">Prompt:</p>
+                      <p className="font-medium italic">
+                        {latestGeneration.prompt}
                       </p>
-                      <p className="italic">{latestGeneration.prompt}</p>
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-xs font-bold text-border dark:text-dark-bg uppercase">
                       Style: {latestGeneration.style}
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                  <div className="text-center py-8 text-border dark:text-dark-bg font-bold">
                     <p>Generation completed but no image was created.</p>
                   </div>
                 )}
@@ -411,7 +409,7 @@ export function StudioPage() {
 
           {/* History sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+            <div className="card-brutal">
               <GenerationHistory
                 generations={generationsData || []}
                 isLoading={isLoadingHistory}
