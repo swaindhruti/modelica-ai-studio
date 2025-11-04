@@ -42,19 +42,16 @@ export function HowItWorksSection() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {steps.map((step, index) => (
-          <div key={index} className="relative">
-            <div className="bg-white border-2 border-black p-6">
+          <div key={index} className="flex">
+            <div className="bg-white border-2 border-black p-6 flex-1 flex flex-col">
               <div className="text-6xl font-bold text-green-500 mb-4 opacity-20">
                 {step.number}
               </div>
               <h3 className="text-xl font-semibold text-black mb-3 tracking-tight">
                 {step.title}
               </h3>
-              <p className="text-zinc-700">{step.description}</p>
+              <p className="text-zinc-700 flex-grow">{step.description}</p>
             </div>
-            {index < steps.length - 1 && (
-              <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 bg-black"></div>
-            )}
           </div>
         ))}
       </div>
