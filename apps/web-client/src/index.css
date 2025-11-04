@@ -2,8 +2,8 @@
 
 @theme {
   /* Single Light Theme */
-  --color-primary: #22c55e; /* Green */
-  --color-primary-hover: #16a34a; /* Darker green */
+  --color-primary: #25da67; /* Green */
+  --color-primary-hover: #25da67; /* Darker green */
   --color-highlight: #fde047; /* Yellow highlight */
   --color-text: #000000; /* Black */
   --color-text-muted: #52525b; /* Zinc-600 */
