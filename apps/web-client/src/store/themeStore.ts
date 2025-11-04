@@ -12,8 +12,19 @@ export const useThemeStore = create<ThemeStore>((set) => ({
   toggleTheme: () => {
     set((state) => {
       const newTheme = state.theme === "light" ? "dark" : "light";
+      console.log("Theme toggling from", state.theme, "to", newTheme);
+
       localStorage.setItem("theme", newTheme);
-      document.documentElement.classList.toggle("dark", newTheme === "dark");
+
+      // Update document class
+      if (newTheme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+
+      console.log("Document classes:", document.documentElement.className);
+
       return { theme: newTheme };
     });
   },
@@ -26,7 +37,13 @@ export const useThemeStore = create<ThemeStore>((set) => ({
       : "light";
     const theme = savedTheme || systemTheme;
 
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    // Update document class
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+
     set({ theme });
   },
 }));

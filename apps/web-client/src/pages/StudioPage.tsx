@@ -24,13 +24,29 @@ export function StudioPage() {
   const queryClient = useQueryClient();
 
   // Fetch generations history
-  const { data: generationsData, isLoading: isLoadingHistory } = useQuery({
+  const {
+    data: generationsData,
+    isLoading: isLoadingHistory,
+    error: historyError,
+  } = useQuery({
     queryKey: ["generations"],
     queryFn: async () => {
       const response = await generationsApi.list();
       return response.data.generations;
     },
+    retry: 1,
   });
+
+  // Show error toast if history fetch fails
+  if (historyError && !isLoadingHistory) {
+    const error = historyError as ApiError;
+    if (!error?.response) {
+      toast.error(
+        "Cannot connect to server. Please ensure the backend is running.",
+        { id: "history-error" }
+      );
+    }
+  }
 
   // Create generation mutation
   const generateMutation = useMutation({
@@ -69,12 +85,26 @@ export function StudioPage() {
       abortControllerRef.current = null;
     },
     onError: (error: ApiError) => {
+      console.error("Generation error:", error);
+
       if (error.name === "CanceledError" || error.code === "ERR_CANCELED") {
         toast.error("Generation cancelled");
       } else if (error?.response?.status === 503) {
         toast.error("Model is busy, please try again later");
+      } else if (error?.response?.status === 401) {
+        toast.error("Authentication failed. Please login again.");
+      } else if (error?.response?.status === 400) {
+        toast.error(error?.response?.data?.error || "Invalid request");
+      } else if (!error?.response) {
+        toast.error(
+          "Network error. Please check your connection and that the backend server is running."
+        );
       } else {
-        toast.error(error?.response?.data?.error || "Generation failed");
+        const errorMsg =
+          error?.response?.data?.error ||
+          error?.response?.data?.message ||
+          "Generation failed";
+        toast.error(errorMsg);
       }
       abortControllerRef.current = null;
     },
@@ -108,6 +138,36 @@ export function StudioPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
+
+      {/* Server Connection Status */}
+      {historyError && (
+        <div className="bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div className="flex items-center gap-2">
+              <svg
+                className="h-5 w-5 text-red-600 dark:text-red-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+              <p className="text-sm text-red-800 dark:text-red-300">
+                <strong>Cannot connect to backend server.</strong> Make sure the
+                server is running on{" "}
+                <code className="px-1 py-0.5 bg-red-100 dark:bg-red-800/30 rounded">
+                  http://localhost:3000
+                </code>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
