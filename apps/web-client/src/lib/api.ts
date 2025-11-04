@@ -28,14 +28,16 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Only handle 401 Unauthorized errors
     // Don't redirect on 401 if user is already on login page
     if (
       error.response?.status === 401 &&
       !window.location.pathname.includes("/login")
     ) {
-      // Clear token and redirect to login
+      // Clear all auth-related data and redirect to login
       localStorage.removeItem("auth_token");
       localStorage.removeItem("auth_user");
+      localStorage.removeItem("auth_token_expiry");
       window.location.href = "/login";
     }
     return Promise.reject(error);

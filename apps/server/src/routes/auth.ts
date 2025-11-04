@@ -100,8 +100,11 @@ export async function authRoutes(fastify: FastifyInstance) {
           return reply.status(401).send({ error: "Invalid credentials" });
         }
 
-        // Generate JWT token
-        const token = await reply.jwtSign({ userId: user.id });
+        // Generate JWT token with 5-day expiry
+        const token = await reply.jwtSign(
+          { userId: user.id },
+          { expiresIn: "5d" }
+        );
 
         request.log.info({ userId: user.id }, "User logged in successfully");
 

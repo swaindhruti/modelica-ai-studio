@@ -20,6 +20,9 @@ export function StudioPage() {
   const [style, setStyle] = useState(STYLES[0].value);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [latestGeneration, setLatestGeneration] = useState<Generation | null>(
+    null
+  );
   const abortControllerRef = useRef<AbortController | null>(null);
   const queryClient = useQueryClient();
 
@@ -74,14 +77,17 @@ export function StudioPage() {
       return false;
     },
     retryDelay: 1000,
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("Generation created successfully!");
+
+      // Store the latest generation to display
+      setLatestGeneration(data);
+
       // Invalidate and refetch generations
       queryClient.invalidateQueries({ queryKey: ["generations"] });
-      // Reset form
-      setPrompt("");
-      setImageFile(null);
-      setImagePreview(null);
+
+      // DON'T reset form - keep it for easy regeneration
+      // User can manually clear if they want a new generation
       abortControllerRef.current = null;
     },
     onError: (error: ApiError) => {
@@ -90,11 +96,44 @@ export function StudioPage() {
       if (error.name === "CanceledError" || error.code === "ERR_CANCELED") {
         toast.error("Generation cancelled");
       } else if (error?.response?.status === 503) {
-        toast.error("Model is busy, please try again later");
+        toast.error("🔥 Model overloaded! Please try again in a moment.");
       } else if (error?.response?.status === 401) {
         toast.error("Authentication failed. Please login again.");
       } else if (error?.response?.status === 400) {
-        toast.error(error?.response?.data?.error || "Invalid request");
+        // Handle Zod validation errors or bad request
+        const errorData = error?.response?.data as Record<string, unknown>;
+        let errorMessage = "Invalid request";
+
+        if (errorData?.error) {
+          // If error is a string, use it
+          if (typeof errorData.error === "string") {
+            errorMessage = errorData.error;
+          }
+          // If it's a Zod error object, extract the message
+          else if (
+            typeof errorData.error === "object" &&
+            errorData.error !== null
+          ) {
+            const errObj = errorData.error as Record<string, unknown>;
+            if (errObj.message && typeof errObj.message === "string") {
+              errorMessage = errObj.message;
+            }
+            // If it's an array of issues (Zod format)
+            else if (Array.isArray(errObj.issues)) {
+              errorMessage = errObj.issues
+                .map((issue: Record<string, unknown>) => issue.message)
+                .filter((msg): msg is string => typeof msg === "string")
+                .join(", ");
+            }
+          }
+        } else if (
+          errorData?.message &&
+          typeof errorData.message === "string"
+        ) {
+          errorMessage = errorData.message;
+        }
+
+        toast.error(errorMessage);
       } else if (!error?.response) {
         toast.error(
           "Network error. Please check your connection and that the backend server is running."
@@ -104,7 +143,9 @@ export function StudioPage() {
           error?.response?.data?.error ||
           error?.response?.data?.message ||
           "Generation failed";
-        toast.error(errorMsg);
+        toast.error(
+          typeof errorMsg === "string" ? errorMsg : "Generation failed"
+        );
       }
       abortControllerRef.current = null;
     },
@@ -132,7 +173,17 @@ export function StudioPage() {
     if (generation.imageUrl) {
       setImagePreview(`http://localhost:3000${generation.imageUrl}`);
     }
+    // Clear latest generation when restoring from history
+    setLatestGeneration(null);
     toast.success("Generation restored to form");
+  };
+
+  const handleClearForm = () => {
+    setPrompt("");
+    setStyle(STYLES[0].value);
+    setImageFile(null);
+    setImagePreview(null);
+    setLatestGeneration(null);
   };
 
   return (
@@ -174,9 +225,18 @@ export function StudioPage() {
           {/* Main generation form */}
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                Create Generation
-              </h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  Create Generation
+                </h2>
+                <button
+                  type="button"
+                  onClick={handleClearForm}
+                  className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                >
+                  Clear Form
+                </button>
+              </div>
 
               <form onSubmit={handleGenerate} className="space-y-6">
                 <ImageUpload
@@ -294,6 +354,59 @@ export function StudioPage() {
                 )}
               </form>
             </div>
+
+            {/* Latest Generation Result */}
+            {latestGeneration && (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    ✨ Latest Generation
+                  </h3>
+                  <button
+                    onClick={() => setLatestGeneration(null)}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    aria-label="Close result"
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                {latestGeneration.imageUrl ? (
+                  <div className="space-y-3">
+                    <img
+                      src={`http://localhost:3000${latestGeneration.imageUrl}`}
+                      alt={latestGeneration.prompt}
+                      className="w-full rounded-lg shadow-md"
+                    />
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="font-medium text-gray-900 dark:text-white mb-1">
+                        Prompt:
+                      </p>
+                      <p className="italic">{latestGeneration.prompt}</p>
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      Style: {latestGeneration.style}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                    <p>Generation completed but no image was created.</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* History sidebar */}
