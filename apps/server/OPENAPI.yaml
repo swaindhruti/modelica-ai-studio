@@ -1,0 +1,325 @@
+openapi: 3.0.3
+info:
+  title: Modelia AI Studio API
+  description: REST API for AI image generation with authentication and file uploads
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@modelia.ai
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://api.modelia.ai
+    description: Production server
+
+tags:
+  - name: Auth
+    description: Authentication endpoints
+  - name: Generations
+    description: AI generation endpoints
+  - name: Health
+    description: Health check endpoints
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Check if the API is running
+      responses:
+        "200":
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: Create a new user account
+      description: Register a new user with email, password, and username
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - username
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  minLength: 8
+                  example: securepass123
+                username:
+                  type: string
+                  minLength: 3
+                  example: johndoe
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User created successfully
+                  user:
+                    $ref: "#/components/schemas/UserPublic"
+        "400":
+          description: Validation error or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Authenticate user
+      description: Login with email and password to receive JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  example: securepass123
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  user:
+                    $ref: "#/components/schemas/UserWithCredits"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /generations:
+    post:
+      tags:
+        - Generations
+      summary: Create a new generation
+      description: |
+        Create a new AI generation with optional file upload.
+
+        **Simulated Behaviors:**
+        - 1-2 second processing delay
+        - 20% chance of 503 Model overloaded error
+
+        **File Upload:**
+        - Images are resized to 512x512 pixels
+        - Supported formats: JPEG, PNG
+        - Max size: 10MB
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  maxLength: 1024
+                  example: A beautiful sunset over mountains
+                style:
+                  type: string
+                  example: realistic
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - prompt
+              properties:
+                prompt:
+                  type: string
+                  maxLength: 1024
+                style:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Generation created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  generation:
+                    $ref: "#/components/schemas/Generation"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized - missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Model overloaded (simulated)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    get:
+      tags:
+        - Generations
+      summary: Get user's generations
+      description: Fetch the authenticated user's last 5 generations, sorted by newest first
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Generations retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  generations:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Generation"
+        "401":
+          description: Unauthorized - missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UserPublic:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        username:
+          type: string
+          example: johndoe
+
+    UserWithCredits:
+      allOf:
+        - $ref: "#/components/schemas/UserPublic"
+        - type: object
+          properties:
+            tier:
+              type: string
+              example: free
+            credits:
+              type: integer
+              example: 1000
+
+    Generation:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        userId:
+          type: integer
+          example: 1
+        prompt:
+          type: string
+          example: A beautiful sunset over mountains
+        style:
+          type: string
+          nullable: true
+          example: realistic
+        status:
+          type: string
+          example: completed
+        imageUrl:
+          type: string
+          nullable: true
+          example: /uploads/abc-123-def.jpg
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-11-05T10:30:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-11-05T10:30:00.000Z"
+
+    Error:
+      type: object
+      properties:
+        error:
+          oneOf:
+            - type: string
+              example: Invalid credentials
+            - type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  path:
+                    type: array
+                    items:
+                      type: string
+                  message:
+                    type: string

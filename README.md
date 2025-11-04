@@ -1,135 +1,357 @@
-# Turborepo starter
+# Modelia AI Studio
 
-This Turborepo starter is maintained by the Turborepo core team.
+A full-stack AI image generation platform with authentication, file uploads, and real-time updates. Built with **Fastify** (backend), **React** (frontend), and **PostgreSQL** (database) in a **Turborepo** monorepo.
 
-## Using this example
+---
 
-Run the following command:
+## 🚀 Features
 
-```sh
-npx create-turbo@latest
+### Backend
+
+- **Authentication**: JWT-based auth with bcrypt password hashing
+- **Database**: PostgreSQL with Drizzle ORM, schema migrations
+- **File Upload**: Multipart form data with Sharp image resizing (512x512)
+- **AI Generation**: Simulated AI model with 5 style options, retry logic for 503 errors
+- **API Documentation**: Comprehensive OpenAPI 3.0 spec
+- **Logging**: Pino structured logging throughout
+- **CORS**: Configured for local and production environments
+
+### Frontend
+
+- **Authentication**: Login/Signup with JWT token persistence
+- **Protected Routes**: Route guards for authenticated pages
+- **AI Studio**: Image generation interface with prompt input and style selection
+- **File Upload**: Drag-and-drop with client-side resizing to 512x512
+- **History**: Last 5 generations with click-to-restore functionality
+- **Dark Mode**: System-aware theme toggle with localStorage
+- **Animations**: Framer Motion transitions
+- **Toast Notifications**: Real-time feedback
+- **Retry Logic**: Auto-retry for 503 errors (up to 3 attempts)
+- **Abort Control**: Cancel in-flight requests
+- **Responsive Design**: Mobile-first Tailwind CSS
+
+---
+
+## 📋 Prerequisites
+
+- **Node.js** 18+
+- **pnpm** (package manager)
+- **PostgreSQL** 14+ (local or remote)
+
+---
+
+## 🛠️ Quick Start
+
+### 1. Clone & Install
+
+```bash
+git clone <your-repo-url>
+cd modelia-ai-studio
+pnpm install
 ```
 
-## What's inside?
+### 2. Database Setup
 
-This Turborepo includes the following packages/apps:
+Create a PostgreSQL database:
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```bash
+createdb modelia_ai_dev
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### 3. Environment Variables
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+#### Backend (`apps/server/.env`)
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/modelia_ai_dev
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+PORT=3000
+NODE_ENV=development
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+#### Frontend (`apps/web-client/.env`)
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```env
+VITE_API_URL=http://localhost:3000
 ```
 
-### Remote Caching
+### 4. Database Migration
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+```bash
+cd apps/server
+pnpm drizzle-kit push
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### 5. Run Development Servers
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+**Option A: Run both simultaneously (from root)**
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+```bash
+pnpm dev
 ```
 
-## Useful Links
+**Option B: Run separately**
 
-Learn more about the power of Turborepo:
+Terminal 1 (Backend):
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+```bash
+cd apps/server
+pnpm dev
+```
+
+Terminal 2 (Frontend):
+
+```bash
+cd apps/web-client
+pnpm dev
+```
+
+- Backend: `http://localhost:3000`
+- Frontend: `http://localhost:5173`
+
+---
+
+## 📁 Project Structure
+
+```
+modelia-ai-studio/
+├── apps/
+│   ├── server/                    # Fastify backend
+│   │   ├── src/
+│   │   │   ├── config/
+│   │   │   │   └── env.ts         # Environment validation
+│   │   │   ├── db/
+│   │   │   │   ├── schema.ts      # Drizzle schema (users, generations)
+│   │   │   │   └── connection.ts  # PostgreSQL connection pool
+│   │   │   ├── middleware/
+│   │   │   │   └── auth.ts        # JWT verification middleware
+│   │   │   ├── routes/
+│   │   │   │   ├── auth.ts        # POST /auth/signup, /auth/login
+│   │   │   │   └── generations.ts # POST /generations, GET /generations
+│   │   │   └── server.ts          # Fastify app entry point
+│   │   ├── uploads/               # Uploaded images
+│   │   ├── README.md              # Backend documentation
+│   │   └── OPENAPI.yaml           # API specification
+│   │
+│   └── web-client/                # React frontend
+│       ├── src/
+│       │   ├── components/
+│       │   │   ├── GenerationHistory.tsx
+│       │   │   ├── ImageUpload.tsx
+│       │   │   ├── Navbar.tsx
+│       │   │   └── ProtectedRoute.tsx
+│       │   ├── lib/
+│       │   │   ├── api.ts         # Axios client with JWT interceptor
+│       │   │   └── imageUtils.ts  # Image validation & resizing
+│       │   ├── pages/
+│       │   │   ├── LoginPage.tsx
+│       │   │   ├── SignupPage.tsx
+│       │   │   └── StudioPage.tsx
+│       │   ├── store/
+│       │   │   ├── authStore.ts   # Zustand auth state
+│       │   │   └── themeStore.ts  # Zustand theme state
+│       │   ├── types/
+│       │   │   └── index.ts       # TypeScript types
+│       │   ├── App.tsx            # Router & providers
+│       │   └── main.tsx           # Entry point
+│       └── README.md              # Frontend documentation
+│
+└── packages/
+    ├── eslint-config/             # Shared ESLint configs
+    ├── typescript-config/         # Shared TypeScript configs
+    ├── types/                     # Shared TypeScript types
+    └── ui/                        # Shared UI components
+```
+
+---
+
+## 📚 Tech Stack
+
+### Backend
+
+- **Fastify** 5.6.1 - Fast web framework
+- **Drizzle ORM** 0.44.7 - Type-safe SQL ORM
+- **PostgreSQL** - Relational database
+- **@fastify/jwt** 10.0.0 - JWT authentication
+- **bcryptjs** 2.4.3 - Password hashing
+- **Sharp** 0.34.4 - Image processing
+- **Zod** 4.1.12 - Schema validation
+- **Pino** - Structured logging
+
+### Frontend
+
+- **React** 18 + **TypeScript** - UI framework
+- **Vite** - Build tool
+- **Tailwind CSS** - Styling
+- **React Router DOM** 7.9.5 - Routing
+- **TanStack Query** 5.90.6 - Data fetching
+- **Axios** 1.13.2 - HTTP client
+- **Zustand** 5.0.8 - State management
+- **Framer Motion** 12.23.24 - Animations
+- **react-hot-toast** 2.6.0 - Notifications
+
+---
+
+## 🎯 API Endpoints
+
+### Authentication
+
+- `POST /auth/signup` - Create new user
+- `POST /auth/login` - Login and get JWT token
+
+### Generations (Protected)
+
+- `POST /generations` - Create new generation (multipart/form-data)
+- `GET /generations` - Get user's generations (last 5)
+
+See `apps/server/OPENAPI.yaml` for full API documentation.
+
+---
+
+## 🧪 Testing
+
+### Backend Tests
+
+```bash
+cd apps/server
+pnpm test
+```
+
+### Frontend Tests
+
+```bash
+cd apps/web-client
+pnpm test
+```
+
+---
+
+## 🚀 Deployment
+
+### Backend (Render)
+
+1. Create a new Web Service on Render
+2. Connect your GitHub repository
+3. Set build command: `cd apps/server && pnpm install && pnpm build`
+4. Set start command: `cd apps/server && pnpm start`
+5. Add environment variables:
+   - `DATABASE_URL` (PostgreSQL connection string)
+   - `JWT_SECRET` (random secure string)
+   - `PORT` (Render provides this automatically)
+   - `NODE_ENV=production`
+
+### Frontend (Vercel)
+
+1. Import project in Vercel
+2. Set root directory: `apps/web-client`
+3. Framework preset: Vite
+4. Add environment variable:
+   - `VITE_API_URL=https://your-backend.onrender.com`
+5. Deploy!
+
+---
+
+## 🔒 Security Best Practices
+
+- ✅ JWT tokens with expiration
+- ✅ bcrypt password hashing (10 rounds)
+- ✅ Environment variable validation
+- ✅ CORS configuration
+- ✅ SQL injection protection via Drizzle ORM
+- ✅ XSS protection via React
+- ✅ File type validation (JPEG/PNG only)
+- ✅ File size limits (10MB client, 50MB server)
+- ✅ Image resizing to prevent large uploads
+
+---
+
+## 📝 Development Scripts
+
+### Root Level
+
+```bash
+pnpm dev           # Run all apps in development mode
+pnpm build         # Build all apps
+pnpm lint          # Lint all apps
+pnpm format        # Format code with Prettier
+```
+
+### Backend
+
+```bash
+cd apps/server
+pnpm dev           # Start development server with nodemon
+pnpm build         # Build TypeScript to dist/
+pnpm start         # Run production build
+pnpm drizzle-kit push  # Push schema changes to database
+pnpm drizzle-kit studio  # Open Drizzle Studio
+```
+
+### Frontend
+
+```bash
+cd apps/web-client
+pnpm dev           # Start Vite dev server
+pnpm build         # Build for production
+pnpm preview       # Preview production build
+pnpm lint          # Run ESLint
+```
+
+---
+
+## 🌟 Key Features Explained
+
+### Authentication Flow
+
+1. User signs up → Password hashed with bcrypt → Saved to PostgreSQL
+2. User logs in → Password verified → JWT token issued
+3. Token stored in localStorage → Sent with every API request
+4. Backend middleware verifies JWT → Grants access to protected routes
+
+### Image Upload & Processing
+
+1. **Client-side**: Canvas API resizes image to 512x512
+2. **Upload**: Multipart form data sent to server
+3. **Server-side**: Sharp library resizes again (double-check)
+4. **Storage**: Saved to `uploads/` directory
+5. **Database**: Image URL stored in `generations` table
+
+### Generation Flow
+
+1. User enters prompt, selects style, uploads image (optional)
+2. Frontend creates FormData with all inputs
+3. TanStack Query mutation sends POST request
+4. Server simulates AI processing (1-2s delay)
+5. 20% chance of 503 error (to test retry logic)
+6. On success: Returns generation with imageUrl
+7. Frontend invalidates cache → History auto-updates
+
+### Retry Logic
+
+- TanStack Query automatically retries 503 errors
+- Up to 3 attempts with 1s delay between retries
+- Toast notifications show retry progress
+- User can abort at any time
+
+---
+
+## 🎨 UI/UX Features
+
+- **Dark Mode**: Toggle in navbar, persists to localStorage
+- **Toast Notifications**: Success (green), Error (red), Info (blue)
+- **Loading States**: Spinners, skeleton screens, disabled buttons
+- **Animations**: Smooth transitions with Framer Motion
+- **Accessibility**: Keyboard navigation, ARIA labels, focus states
+- **Responsive Design**: Mobile-first, works on all screen sizes
+
+---
+
+## 📄 License
+
+ISC
+
+---
+
+## 🙏 Acknowledgments
+
+Built with [Turborepo](https://turborepo.com/), [Fastify](https://fastify.io/), [React](https://react.dev/), and [Drizzle ORM](https://orm.drizzle.team/).

@@ -1,0 +1,4 @@
+# Ignore all files in uploads except README
+*
+!README.md
+!.gitignore

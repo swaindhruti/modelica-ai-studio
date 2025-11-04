@@ -1,17 +1,22 @@
-import z from "zod";
+import type { FastifyBaseLogger } from "fastify";
 
-const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "production", "test"]),
-  PORT: z
-    .string()
-    .transform((val) => parseInt(val, 10))
-    .refine((val) => !isNaN(val) && val > 0, {
-      message: "PORT must be a positive integer",
-    }),
-  DATABASE_URL: z.string().url(),
-  JWT_SECRET: z
-    .string()
-    .min(32, "JWT_SECRET must be at least 32 characters long"),
-});
+// Simple function to check if all required env variables are present
+export function checkEnvVariables(logger: FastifyBaseLogger) {
+  const requiredEnvs = ["NODE_ENV", "PORT", "DATABASE_URL", "JWT_SECRET"];
+  const missing: string[] = [];
 
-export const env = envSchema.parse(process.env);
+  for (const env of requiredEnvs) {
+    if (!process.env[env]) {
+      missing.push(env);
+    }
+  }
+
+  if (missing.length > 0) {
+    logger.error(
+      `❌ Environment variables not available: ${missing.join(", ")}`
+    );
+    process.exit(1);
+  }
+
+  logger.info("✅ All environment variables are available");
+}
