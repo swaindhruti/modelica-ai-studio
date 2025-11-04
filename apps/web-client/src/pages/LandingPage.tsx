@@ -7,6 +7,7 @@ import { FeaturesSection } from "../components/sections/FeaturesSection";
 import { PricingSection } from "../components/sections/PricingSection";
 import { HowItWorksSection } from "../components/sections/HowItWorksSection";
 import { ContactSection } from "../components/sections/ContactSection";
+import { Footer } from "../components/Footer";
 
 export function LandingPage() {
   const navigate = useNavigate();
@@ -30,6 +31,8 @@ export function LandingPage() {
         <HowItWorksSection />
         <ContactSection />
       </div>
+
+      <Footer />
     </div>
   );
 }
