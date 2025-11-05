@@ -37,10 +37,69 @@ A full-stack AI image generation platform with authentication, file uploads, and
 - **Node.js** 18+
 - **pnpm** (package manager)
 - **PostgreSQL** 14+ (local or remote)
+- **Docker** & **Docker Compose** (optional, for containerized setup)
 
 ---
 
-## 🛠️ Quick Start
+## 🐳 Quick Start with Docker (Recommended)
+
+The easiest way to run the entire stack (frontend, backend, and database) is with Docker Compose:
+
+### 1. Clone the Repository
+
+```bash
+git clone <your-repo-url>
+cd modelia-ai-studio
+```
+
+### 2. Configure Environment Variables
+
+```bash
+# Edit .env file and set your values
+nano .env
+```
+
+Required variables:
+
+- `JWT_SECRET`: A secure random string
+- `VITE_CLOUDINARY_CLOUD_NAME`: Your Cloudinary cloud name (optional)
+- `VITE_CLOUDINARY_UPLOAD_PRESET`: Your Cloudinary upload preset (optional)
+
+### 3. Start All Services
+
+```bash
+# Using the helper script (recommended)
+./docker.sh start
+
+# Or using docker-compose directly
+docker-compose up --build
+```
+
+### 4. Access the Application
+
+- **Web Client**: http://localhost:8080
+- **Backend API**: http://localhost:3000
+- **Database**: localhost:5432
+
+### Docker Commands
+
+```bash
+./docker.sh start      # Start all services
+./docker.sh stop       # Stop all services
+./docker.sh restart    # Restart all services
+./docker.sh logs       # View logs
+./docker.sh status     # Check service status
+./docker.sh migrate    # Run database migrations
+./docker.sh reset      # Reset everything (deletes data!)
+```
+
+For more details, see [README.docker.md](./README.docker.md)
+
+---
+
+## 🛠️ Quick Start (Manual Setup)
+
+If you prefer to run services manually without Docker:
 
 ### 1. Clone & Install
 
