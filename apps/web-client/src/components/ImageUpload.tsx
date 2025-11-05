@@ -59,7 +59,7 @@ export function ImageUpload({ onImageSelect, preview }: ImageUploadProps) {
     <div>
       <label
         htmlFor="image-upload"
-        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+        className="block text-sm font-semibold text-black mb-2"
       >
         Upload Image (Optional)
       </label>
@@ -72,14 +72,14 @@ export function ImageUpload({ onImageSelect, preview }: ImageUploadProps) {
         onDragLeave={() => setIsDragging(false)}
         onClick={() => fileInputRef.current?.click()}
         className={`
-          relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
-          transition-colors duration-200
+          relative border-2 border-dashed p-8 text-center cursor-pointer
+          transition-all duration-200
           ${
             isDragging
-              ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20"
-              : "border-gray-300 dark:border-gray-700 hover:border-indigo-400 dark:hover:border-indigo-500"
+              ? "border-green-500 bg-green-50"
+              : "border-zinc-300 hover:border-green-500"
           }
-          ${preview ? "bg-gray-50 dark:bg-gray-800" : "bg-white dark:bg-gray-900"}
+          ${preview ? "bg-zinc-50" : "bg-white"}
         `}
       >
         <input
@@ -94,20 +94,20 @@ export function ImageUpload({ onImageSelect, preview }: ImageUploadProps) {
         />
 
         {preview ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <img
               src={preview}
               alt="Preview"
-              className="max-h-48 mx-auto rounded-lg shadow-md"
+              className="max-h-48 mx-auto border-2 border-black"
             />
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-zinc-600 font-medium">
               Click or drag to change image
             </p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <svg
-              className="mx-auto h-12 w-12 text-gray-400"
+              className="mx-auto h-12 w-12 text-zinc-400"
               stroke="currentColor"
               fill="none"
               viewBox="0 0 48 48"
@@ -120,13 +120,13 @@ export function ImageUpload({ onImageSelect, preview }: ImageUploadProps) {
                 strokeLinejoin="round"
               />
             </svg>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+            <div className="text-sm text-zinc-700 font-medium">
+              <span className="font-semibold text-green-500">
                 Click to upload
               </span>{" "}
               or drag and drop
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-500">
+            <p className="text-xs text-zinc-600 font-medium">
               PNG or JPEG up to 10MB (will be resized to 512x512)
             </p>
           </div>

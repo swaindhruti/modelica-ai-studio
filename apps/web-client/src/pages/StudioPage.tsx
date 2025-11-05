@@ -1,11 +1,12 @@
-import { useState, useRef } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { generationsApi } from "../lib/api";
+import { useState } from "react";
 import { ImageUpload } from "../components/ImageUpload";
 import { GenerationHistory } from "../components/GenerationHistory";
+import { GenerationModal } from "../components/GenerationModal";
 import { Navbar } from "../components/Navbar";
 import toast from "react-hot-toast";
-import type { ApiError, Generation } from "../types";
+import type { Generation } from "../types";
+// imagekitio-react removed; using direct upload via hook
+import { useGenerate, useImageUpload, useGenerations } from "../hooks";
 
 const STYLES = [
   { value: "photorealistic", label: "Photorealistic" },
@@ -18,160 +19,42 @@ const STYLES = [
 export function StudioPage() {
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState(STYLES[0].value);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [latestGeneration, setLatestGeneration] = useState<Generation | null>(
-    null
-  );
-  const abortControllerRef = useRef<AbortController | null>(null);
-  const queryClient = useQueryClient();
+  const [selectedGeneration, setSelectedGeneration] =
+    useState<Generation | null>(null);
 
-  // Fetch generations history
+  // Custom hooks
   const {
-    data: generationsData,
+    generations,
     isLoading: isLoadingHistory,
     error: historyError,
-  } = useQuery({
-    queryKey: ["generations"],
-    queryFn: async () => {
-      const response = await generationsApi.list();
-      return response.data.generations;
-    },
-    retry: 1,
-  });
-
-  // Show error toast if history fetch fails
-  if (historyError && !isLoadingHistory) {
-    const error = historyError as ApiError;
-    if (!error?.response) {
-      toast.error(
-        "Cannot connect to server. Please ensure the backend is running.",
-        { id: "history-error" }
-      );
-    }
-  }
-
-  // Create generation mutation
-  const generateMutation = useMutation({
-    mutationFn: async () => {
-      const formData = new FormData();
-      formData.append("prompt", prompt);
-      formData.append("style", style);
-      if (imageFile) {
-        formData.append("file", imageFile);
-      }
-
-      abortControllerRef.current = new AbortController();
-      const response = await generationsApi.create(
-        formData,
-        abortControllerRef.current.signal
-      );
-      return response.data;
-    },
-    retry: (failureCount, error: ApiError) => {
-      // Retry up to 3 times only for 503 errors
-      if (error?.response?.status === 503 && failureCount < 3) {
-        toast.error(`Model overloaded. Retry ${failureCount + 1}/3...`);
-        return true;
-      }
-      return false;
-    },
-    retryDelay: 1000,
-    onSuccess: (data) => {
-      toast.success("Generation created successfully!");
-
-      // Store the latest generation to display
-      setLatestGeneration(data);
-
-      // Invalidate and refetch generations
-      queryClient.invalidateQueries({ queryKey: ["generations"] });
-
-      // DON'T reset form - keep it for easy regeneration
-      // User can manually clear if they want a new generation
-      abortControllerRef.current = null;
-    },
-    onError: (error: ApiError) => {
-      console.error("Generation error:", error);
-
-      if (error.name === "CanceledError" || error.code === "ERR_CANCELED") {
-        toast.error("Generation cancelled");
-      } else if (error?.response?.status === 503) {
-        toast.error("🔥 Model overloaded! Please try again in a moment.");
-      } else if (error?.response?.status === 401) {
-        toast.error("Authentication failed. Please login again.");
-      } else if (error?.response?.status === 400) {
-        // Handle Zod validation errors or bad request
-        const errorData = error?.response?.data as Record<string, unknown>;
-        let errorMessage = "Invalid request";
-
-        if (errorData?.error) {
-          // If error is a string, use it
-          if (typeof errorData.error === "string") {
-            errorMessage = errorData.error;
-          }
-          // If it's a Zod error object, extract the message
-          else if (
-            typeof errorData.error === "object" &&
-            errorData.error !== null
-          ) {
-            const errObj = errorData.error as Record<string, unknown>;
-            if (errObj.message && typeof errObj.message === "string") {
-              errorMessage = errObj.message;
-            }
-            // If it's an array of issues (Zod format)
-            else if (Array.isArray(errObj.issues)) {
-              errorMessage = errObj.issues
-                .map((issue: Record<string, unknown>) => issue.message)
-                .filter((msg): msg is string => typeof msg === "string")
-                .join(", ");
-            }
-          }
-        } else if (
-          errorData?.message &&
-          typeof errorData.message === "string"
-        ) {
-          errorMessage = errorData.message;
-        }
-
-        toast.error(errorMessage);
-      } else if (!error?.response) {
-        toast.error(
-          "Network error. Please check your connection and that the backend server is running."
-        );
-      } else {
-        const errorMsg =
-          error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          "Generation failed";
-        toast.error(
-          typeof errorMsg === "string" ? errorMsg : "Generation failed"
-        );
-      }
-      abortControllerRef.current = null;
-    },
-  });
+  } = useGenerations();
+  const {
+    imageUrl,
+    imagePreview,
+    upload,
+    isUploading,
+    setImagePreview,
+    clearImage,
+    setImageUrl,
+  } = useImageUpload();
+  const {
+    generateMutation,
+    latestGeneration,
+    setLatestGeneration,
+    handleGenerate: handleGenerateHook,
+  } = useGenerate();
 
   const handleGenerate = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!prompt.trim()) {
-      toast.error("Please enter a prompt");
-      return;
-    }
-    generateMutation.mutate();
-  };
-
-  const handleAbort = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      generateMutation.reset();
-    }
+    handleGenerateHook({ prompt, style, imageUrl: imageUrl || undefined });
   };
 
   const handleRestore = (generation: Generation) => {
     setPrompt(generation.prompt);
     setStyle(generation.style || STYLES[0].value);
     if (generation.imageUrl) {
-      setImagePreview(`http://localhost:3000${generation.imageUrl}`);
+      setImageUrl(generation.imageUrl);
+      setImagePreview(generation.imageUrl);
     }
     // Clear latest generation when restoring from history
     setLatestGeneration(null);
@@ -181,22 +64,21 @@ export function StudioPage() {
   const handleClearForm = () => {
     setPrompt("");
     setStyle(STYLES[0].value);
-    setImageFile(null);
-    setImagePreview(null);
+    clearImage();
     setLatestGeneration(null);
   };
 
   return (
-    <div className="min-h-screen bg-bg-light dark:bg-dark-bg">
+    <div className="min-h-screen bg-white grid-bg">
       <Navbar />
 
       {/* Server Connection Status */}
-      {historyError && (
-        <div className="bg-accent-orange dark:bg-dark-accent brutal-border border-t-0 border-l-0 border-r-0 brutal-shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            <div className="flex items-center gap-2">
+      {historyError && !isLoadingHistory ? (
+        <div className="bg-yellow-300 border-b-2 border-black">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
+            <div className="flex items-center gap-3">
               <svg
-                className="h-5 w-5 text-border dark:text-dark-bg"
+                className="h-5 w-5 text-black flex-shrink-0"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -208,217 +90,229 @@ export function StudioPage() {
                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                 />
               </svg>
-              <p className="text-sm text-border dark:text-dark-bg font-bold">
-                <strong>Cannot connect to backend server.</strong> Make sure the
-                server is running on{" "}
-                <code className="px-1 py-0.5 bg-bg-white dark:bg-dark-bg brutal-border">
+              <p className="text-sm text-black font-semibold">
+                Cannot connect to backend server. Make sure the server is
+                running on{" "}
+                <code className="px-2 py-0.5 bg-white border-2 border-black font-mono text-xs">
                   http://localhost:3000
                 </code>
               </p>
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+        {/* Header */}
+        <div className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-medium text-black mb-4 tracking-tight">
+            AI Fashion Studio
+          </h1>
+          <p className="text-lg text-zinc-700 max-w-2xl">
+            Create stunning fashion model images with AI. Upload a reference
+            image or describe your vision.
+          </p>
+        </div>
+
+        <div className="space-y-8">
           {/* Main generation form */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="card-brutal">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-black text-border dark:text-dark-text uppercase">
-                  Create Generation
-                </h2>
-                <button
-                  type="button"
-                  onClick={handleClearForm}
-                  className="text-sm font-bold text-secondary dark:text-dark-primary hover:underline uppercase"
+          <div className="bg-white border-2 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-semibold text-black tracking-tight">
+                Create Generation
+              </h2>
+              <button
+                type="button"
+                onClick={handleClearForm}
+                className="text-sm font-semibold text-zinc-600 hover:text-black transition-colors"
+              >
+                Clear Form
+              </button>
+            </div>
+
+            <form onSubmit={handleGenerate} className="space-y-6">
+              <ImageUpload
+                onImageSelect={(file, preview) => {
+                  setImagePreview(preview);
+                  upload(file);
+                }}
+                preview={imagePreview}
+              />
+
+              <div>
+                <label
+                  htmlFor="prompt"
+                  className="block text-sm font-semibold text-black mb-2"
                 >
-                  Clear Form
+                  Prompt *
+                </label>
+                <textarea
+                  id="prompt"
+                  name="prompt"
+                  rows={4}
+                  required
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="Describe what you want to generate..."
+                  className="w-full px-4 py-3 text-base border-2 border-zinc-200 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-colors resize-none"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="style"
+                  className="block text-sm font-semibold text-black mb-2"
+                >
+                  Style
+                </label>
+                <select
+                  id="style"
+                  name="style"
+                  value={style}
+                  onChange={(e) => setStyle(e.target.value)}
+                  className="w-full px-4 py-3 text-base border-2 border-zinc-200 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-colors bg-white"
+                >
+                  {STYLES.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  disabled={generateMutation.isPending || isUploading}
+                  className="flex-1 px-8 py-4 font-semibold text-base text-black bg-green-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                >
+                  {generateMutation.isPending ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg
+                        className="animate-spin h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Generating...
+                    </span>
+                  ) : (
+                    "Generate"
+                  )}
                 </button>
               </div>
 
-              <form onSubmit={handleGenerate} className="space-y-6">
-                <ImageUpload
-                  onImageSelect={(file, preview) => {
-                    setImageFile(file);
-                    setImagePreview(preview);
-                  }}
-                  preview={imagePreview}
-                />
-
-                <div>
-                  <label
-                    htmlFor="prompt"
-                    className="block text-sm font-bold text-border dark:text-dark-text mb-2 uppercase"
-                  >
-                    Prompt *
-                  </label>
-                  <textarea
-                    id="prompt"
-                    name="prompt"
-                    rows={4}
-                    required
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="Describe what you want to generate..."
-                    className="input-brutal w-full resize-none"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="style"
-                    className="block text-sm font-bold text-border dark:text-dark-text mb-2 uppercase"
-                  >
-                    Style
-                  </label>
-                  <select
-                    id="style"
-                    name="style"
-                    value={style}
-                    onChange={(e) => setStyle(e.target.value)}
-                    className="input-brutal w-full"
-                  >
-                    {STYLES.map((s) => (
-                      <option key={s.value} value={s.value}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    type="submit"
-                    disabled={generateMutation.isPending}
-                    className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {generateMutation.isPending ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <svg
-                          className="animate-spin h-5 w-5"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        Generating...
-                      </span>
-                    ) : (
-                      "Generate"
-                    )}
-                  </button>
-
-                  {generateMutation.isPending && (
+              {generateMutation.isError && !generateMutation.isPending && (
+                <div className="bg-yellow-300 border-2 border-black p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-black">
+                      Generation failed. Please try again.
+                    </p>
                     <button
                       type="button"
-                      onClick={handleAbort}
-                      className="btn-secondary px-6"
+                      onClick={() =>
+                        generateMutation.mutate({
+                          prompt,
+                          style,
+                          imageUrl: imageUrl || undefined,
+                        })
+                      }
+                      className="text-sm font-semibold text-black hover:underline"
                     >
-                      Abort
+                      Retry
                     </button>
-                  )}
+                  </div>
                 </div>
-
-                {generateMutation.isError && !generateMutation.isPending && (
-                  <div className="brutal-border bg-accent-orange dark:bg-dark-accent p-4">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-bold text-border dark:text-dark-bg">
-                        Generation failed. Please try again.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => generateMutation.mutate()}
-                        className="text-sm font-bold text-border dark:text-dark-bg hover:underline uppercase"
-                      >
-                        Retry
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </form>
-            </div>
-
-            {/* Latest Generation Result */}
-            {latestGeneration && (
-              <div className="card-brutal bg-primary dark:bg-dark-primary">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-2xl font-black text-border dark:text-dark-bg uppercase">
-                    ✨ Latest Generation
-                  </h3>
-                  <button
-                    onClick={() => setLatestGeneration(null)}
-                    className="text-border dark:text-dark-bg hover:opacity-70 font-bold"
-                    aria-label="Close result"
-                  >
-                    <svg
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={3}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-
-                {latestGeneration.imageUrl ? (
-                  <div className="space-y-4">
-                    <img
-                      src={`http://localhost:3000${latestGeneration.imageUrl}`}
-                      alt={latestGeneration.prompt}
-                      className="w-full brutal-border brutal-shadow"
-                    />
-                    <div className="text-sm text-border dark:text-dark-bg">
-                      <p className="font-black mb-1 uppercase">Prompt:</p>
-                      <p className="font-medium italic">
-                        {latestGeneration.prompt}
-                      </p>
-                    </div>
-                    <div className="text-xs font-bold text-border dark:text-dark-bg uppercase">
-                      Style: {latestGeneration.style}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-border dark:text-dark-bg font-bold">
-                    <p>Generation completed but no image was created.</p>
-                  </div>
-                )}
-              </div>
-            )}
+              )}
+            </form>
           </div>
 
-          {/* History sidebar */}
-          <div className="lg:col-span-1">
-            <div className="card-brutal">
-              <GenerationHistory
-                generations={generationsData || []}
-                isLoading={isLoadingHistory}
-                onRestore={handleRestore}
-              />
+          {/* Latest Generation Result */}
+          {latestGeneration && (
+            <div className="bg-green-500 border-2 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-semibold text-black tracking-tight">
+                  ✨ Latest Generation
+                </h3>
+                <button
+                  onClick={() => setLatestGeneration(null)}
+                  className="text-black hover:opacity-70 font-bold"
+                  aria-label="Close result"
+                >
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              {latestGeneration.imageUrl ? (
+                <div className="space-y-4">
+                  <img
+                    src={latestGeneration.imageUrl}
+                    alt={latestGeneration.prompt}
+                    className="w-full border-2 border-black"
+                  />
+                  <div className="text-sm text-black bg-white border-2 border-black p-4">
+                    <p className="font-semibold mb-1">Prompt:</p>
+                    <p className="italic">{latestGeneration.prompt}</p>
+                  </div>
+                  <div className="text-sm font-semibold text-black bg-white border-2 border-black px-4 py-2 inline-block">
+                    Style: {latestGeneration.style}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-black font-semibold">
+                  <p>Generation completed but no image was created.</p>
+                </div>
+              )}
             </div>
+          )}
+
+          {/* Recent Generations History */}
+          <div className="bg-white border-2 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <GenerationHistory
+              generations={generations}
+              isLoading={isLoadingHistory}
+              onRestore={handleRestore}
+              onView={(generation) => setSelectedGeneration(generation)}
+            />
           </div>
         </div>
       </main>
+
+      {/* Generation Modal */}
+      <GenerationModal
+        generation={selectedGeneration}
+        onClose={() => setSelectedGeneration(null)}
+        onRestore={(generation) => {
+          handleRestore(generation);
+          setSelectedGeneration(null);
+        }}
+      />
     </div>
   );
 }

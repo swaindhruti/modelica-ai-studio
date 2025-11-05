@@ -1,85 +1,81 @@
 import "dotenv/config";
 import Fastify from "fastify";
+import type { FastifyInstance, FastifyServerOptions } from "fastify";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
-import multipart from "@fastify/multipart";
-import fastifyStatic from "@fastify/static";
-import { checkEnvVariables } from "./config/env.js";
-import { connectDB } from "./db/connection.js";
-import { authRoutes } from "./routes/auth.js";
-import { generationRoutes } from "./routes/generations.js";
-import path from "path";
+import { env } from "./config/env.ts";
+import { connectDB } from "./db/connection.ts";
+import { authRoutes } from "./routes/auth.ts";
+import { generationRoutes } from "./routes/generations.ts";
+import { imagekitRoutes } from "./routes/imagekit.ts";
 
-const fastify = Fastify({
-  logger: {
-    level: "info",
-    transport: {
-      target: "pino-pretty",
-      options: {
-        colorize: true,
-        ignore: "pid,hostname",
-        translateTime: "HH:MM:ss Z",
-      },
-    },
-  },
-});
+export async function build(
+  opts: FastifyServerOptions = {}
+): Promise<FastifyInstance> {
+  const fastify = Fastify({
+    logger:
+      opts.logger !== undefined
+        ? opts.logger
+        : {
+            level: "info",
+            transport: {
+              target: "pino-pretty",
+              options: {
+                colorize: true,
+                ignore: "pid,hostname",
+                translateTime: "HH:MM:ss Z",
+              },
+            },
+          },
+    ...opts,
+  });
+
+  // Register CORS
+  await fastify.register(cors, {
+    origin: env.NODE_ENV === "production" ? false : "*",
+    credentials: true,
+  });
+
+  // Register JWT
+  await fastify.register(jwt, {
+    secret: env.JWT_SECRET,
+  });
+
+  // Register routes
+  await fastify.register(authRoutes, { prefix: "/auth" });
+  await fastify.register(generationRoutes, { prefix: "/generations" });
+  await fastify.register(imagekitRoutes);
+
+  // Health check route
+  fastify.get("/health", async () => {
+    return { status: "ok", timestamp: new Date().toISOString() };
+  });
+
+  // Connect to database
+  await connectDB(fastify.log);
+
+  return fastify;
+}
 
 // Start server
 async function start() {
   try {
-    // Check if all environment variables are present
-    checkEnvVariables(fastify.log);
-
-    // Register CORS
-    await fastify.register(cors, {
-      origin: process.env.NODE_ENV === "production" ? false : "*",
-      credentials: true,
-    });
-
-    // Register JWT
-    await fastify.register(jwt, {
-      secret: process.env.JWT_SECRET!,
-    });
-
-    // Register multipart for file uploads
-    await fastify.register(multipart, {
-      limits: {
-        fileSize: 10 * 1024 * 1024, // 10MB
-      },
-    });
-
-    // Register static file serving for uploads
-    await fastify.register(fastifyStatic, {
-      root: path.join(process.cwd(), "uploads"),
-      prefix: "/uploads/",
-    });
-
-    // Register routes
-    await fastify.register(authRoutes, { prefix: "/auth" });
-    await fastify.register(generationRoutes, { prefix: "/generations" });
-
-    // Health check route
-    fastify.get("/health", async () => {
-      return { status: "ok", timestamp: new Date().toISOString() };
-    });
-
-    // Connect to database
-    await connectDB(fastify.log);
+    const fastify = await build();
 
     // Start listening
     await fastify.listen({
-      port: parseInt(process.env.PORT!),
+      port: env.PORT,
       host: "0.0.0.0",
     });
 
-    fastify.log.info(
-      `🚀 Server running on http://localhost:${process.env.PORT}`
-    );
-    fastify.log.info(`📁 Static files served from /uploads`);
+    fastify.log.info(`🚀 Server running on http://localhost:${env.PORT}`);
   } catch (err) {
-    fastify.log.error(err);
+    console.error(err);
     process.exit(1);
   }
 }
 
-start();
+// Start server only if not in test environment
+if (process.env.NODE_ENV !== "test") {
+  start();
+}

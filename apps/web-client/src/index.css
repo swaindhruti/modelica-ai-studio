@@ -171,3 +171,13 @@ body {
   background-color: var(--color-highlight);
   padding: 0 0.25rem;
 }
+
+/* Hide scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

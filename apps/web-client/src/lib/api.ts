@@ -54,13 +54,12 @@ export const authApi = {
 };
 
 export const generationsApi = {
-  create: (formData: FormData, signal?: AbortSignal) =>
-    apiClient.post("/generations", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      signal,
-    }),
+  create: (data: { prompt: string; style?: string; imageUrl?: string }) =>
+    apiClient.post("/generations", data),
 
   list: () => apiClient.get("/generations"),
+
+  delete: (id: number) => apiClient.delete(`/generations/${id}`),
+
+  getImagekitAuth: () => apiClient.get("/auth/imagekit"),
 };

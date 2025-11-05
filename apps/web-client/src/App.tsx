@@ -47,7 +47,7 @@ function App() {
         </Routes>
       </BrowserRouter>
       <Toaster
-        position="top-right"
+        position="bottom-right"
         toastOptions={{
           duration: 3000,
           className: "dark:bg-dark-bg dark:text-dark-text brutal-border",

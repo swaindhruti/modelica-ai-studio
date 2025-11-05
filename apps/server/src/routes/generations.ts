@@ -1,18 +1,15 @@
 import { z } from "zod";
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { db } from "../db/connection.js";
-import { generations } from "../db/schema.js";
+import { db } from "../db/connection.ts";
+import { generations } from "../db/schema.ts";
 import { eq, desc } from "drizzle-orm";
-import { authMiddleware } from "../middleware/auth.js";
-import path from "path";
-import { promises as fs } from "fs";
-import sharp from "sharp";
-import { randomUUID } from "crypto";
+import { authMiddleware } from "../middleware/auth.ts";
 
 // Validation schema
 const createGenerationSchema = z.object({
   prompt: z.string().min(1, "Prompt is required").max(1024),
   style: z.string().optional(),
+  imageUrl: z.string().url().optional(),
 });
 
 export async function generationRoutes(fastify: FastifyInstance) {
@@ -35,40 +32,6 @@ export async function generationRoutes(fastify: FastifyInstance) {
           return reply.status(503).send({ error: "Model overloaded" });
         }
 
-        // Handle file upload if present
-        let imageUrl: string | undefined;
-        const data = await request.file();
-
-        if (data) {
-          // Validate file type
-          if (!data.mimetype.startsWith("image/")) {
-            return reply.status(400).send({ error: "File must be an image" });
-          }
-
-          // Generate unique filename
-          const ext = path.extname(data.filename);
-          const filename = `${randomUUID()}${ext}`;
-          const uploadsDir = path.join(process.cwd(), "uploads");
-          const filepath = path.join(uploadsDir, filename);
-
-          // Ensure uploads directory exists
-          await fs.mkdir(uploadsDir, { recursive: true });
-
-          // Read file buffer
-          const buffer = await data.toBuffer();
-
-          // Resize image using sharp
-          await sharp(buffer)
-            .resize(512, 512, {
-              fit: "cover",
-              position: "center",
-            })
-            .toFile(filepath);
-
-          imageUrl = `/uploads/${filename}`;
-          request.log.info({ filename }, "Image uploaded and resized");
-        }
-
         // Create generation record
         const [newGeneration] = await db
           .insert(generations)
@@ -76,7 +39,7 @@ export async function generationRoutes(fastify: FastifyInstance) {
             userId: request.userId!,
             prompt: body.prompt,
             style: body.style,
-            imageUrl,
+            imageUrl: body.imageUrl,
             status: "completed",
           })
           .returning();
@@ -129,6 +92,56 @@ export async function generationRoutes(fastify: FastifyInstance) {
         });
       } catch (error) {
         request.log.error(error, "Fetch generations error");
+        return reply.status(500).send({ error: "Internal server error" });
+      }
+    }
+  );
+
+  // DELETE /generations/:id (Protected)
+  fastify.delete(
+    "/:id",
+    { preHandler: authMiddleware },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        const { id } = request.params as { id: string };
+        const generationId = parseInt(id, 10);
+
+        if (isNaN(generationId)) {
+          return reply.status(400).send({ error: "Invalid generation ID" });
+        }
+
+        // Fetch the generation to check ownership and get image path
+        const [generation] = await db
+          .select()
+          .from(generations)
+          .where(eq(generations.id, generationId))
+          .limit(1);
+
+        if (!generation) {
+          return reply.status(404).send({ error: "Generation not found" });
+        }
+
+        // Check if the generation belongs to the user
+        if (generation.userId !== request.userId) {
+          return reply.status(403).send({ error: "Unauthorized" });
+        }
+
+        // For ImageKit, we don't delete the file from our server.
+        // Deletion from ImageKit can be handled separately if needed.
+
+        // Delete the generation from database
+        await db.delete(generations).where(eq(generations.id, generationId));
+
+        request.log.info(
+          { generationId, userId: request.userId },
+          "Generation deleted successfully"
+        );
+
+        return reply
+          .status(200)
+          .send({ message: "Generation deleted successfully" });
+      } catch (error) {
+        request.log.error(error, "Delete generation error");
         return reply.status(500).send({ error: "Internal server error" });
       }
     }

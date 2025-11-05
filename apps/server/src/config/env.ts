@@ -1,22 +1,26 @@
-import type { FastifyBaseLogger } from "fastify";
+import "dotenv/config";
+import { z } from "zod";
+import { fromZodError } from "zod-validation-error";
 
-// Simple function to check if all required env variables are present
-export function checkEnvVariables(logger: FastifyBaseLogger) {
-  const requiredEnvs = ["NODE_ENV", "PORT", "DATABASE_URL", "JWT_SECRET"];
-  const missing: string[] = [];
+const envSchema = z.object({
+  NODE_ENV: z.enum(["development", "production", "test"]),
+  PORT: z.coerce.number().default(3000),
+  DATABASE_URL: z.string().url(),
+  JWT_SECRET: z.string().min(1),
+  IMAGEKIT_PUBLIC_KEY: z.string().min(1),
+  IMAGEKIT_PRIVATE_KEY: z.string().min(1),
+  IMAGEKIT_URL_ENDPOINT: z.string().url(),
+});
 
-  for (const env of requiredEnvs) {
-    if (!process.env[env]) {
-      missing.push(env);
-    }
-  }
+const parsedEnv = envSchema.safeParse(process.env);
 
-  if (missing.length > 0) {
-    logger.error(
-      `❌ Environment variables not available: ${missing.join(", ")}`
-    );
-    process.exit(1);
-  }
-
-  logger.info("✅ All environment variables are available");
+if (!parsedEnv.success) {
+  const validationError = fromZodError(parsedEnv.error);
+  console.error(
+    "❌ Invalid environment variables:",
+    validationError.toString()
+  );
+  process.exit(1);
 }
+
+export const env = parsedEnv.data;
