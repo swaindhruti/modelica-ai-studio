@@ -16,29 +16,34 @@ export async function build(
       opts.logger !== undefined
         ? opts.logger
         : env.NODE_ENV === "production"
-        ? true // Simple logging in production
-        : {
-            level: "info",
-            transport: {
-              target: "pino-pretty",
-              options: {
-                colorize: true,
-                ignore: "pid,hostname",
-                translateTime: "HH:MM:ss Z",
+          ? true // Simple logging in production
+          : {
+              level: "info",
+              transport: {
+                target: "pino-pretty",
+                options: {
+                  colorize: true,
+                  ignore: "pid,hostname",
+                  translateTime: "HH:MM:ss Z",
+                },
               },
             },
-          },
     ...opts,
   });
 
   // Register CORS
-  // Simple CORS: Allow all origins for now (we'll restrict later)
+  // Allow requests from any origin for now (we can restrict later)
   await fastify.register(cors, {
-    origin: true, // Allow all origins temporarily for debugging
+    origin: (origin, cb) => {
+      // Allow all origins - you can restrict this later
+      cb(null, true);
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
     exposedHeaders: ["Content-Type", "Authorization"],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   // Register JWT
