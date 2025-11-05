@@ -5,7 +5,7 @@ import { GenerationModal } from "../components/GenerationModal";
 import { Navbar } from "../components/Navbar";
 import toast from "react-hot-toast";
 import type { Generation } from "../types";
-// imagekitio-react removed; using direct upload via hook
+// Using Cloudinary for direct client-side uploads
 import { useGenerate, useImageUpload, useGenerations } from "../hooks";
 
 const STYLES = [

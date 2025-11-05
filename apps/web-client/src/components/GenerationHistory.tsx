@@ -75,8 +75,17 @@ export function GenerationHistory({
       queryClient.invalidateQueries({ queryKey: ["generations"] });
       setDeletingId(null);
     },
-    onError: () => {
-      toast.error("Failed to delete generation");
+    onError: (error: unknown) => {
+      console.error("Delete generation error:", error);
+      const err = error as {
+        response?: { data?: { error?: string } };
+        message?: string;
+      };
+      const errorMessage =
+        err?.response?.data?.error ||
+        err?.message ||
+        "Failed to delete generation";
+      toast.error(errorMessage);
       setDeletingId(null);
     },
   });

@@ -1,11 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useAuthStore } from "../store/authStore";
+import toast from "react-hot-toast";
 
 export function LandingNavbar() {
   const navigate = useNavigate();
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { user, isAuthenticated, logout } = useAuthStore();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious();
@@ -15,6 +20,28 @@ export function LandingNavbar() {
       setHidden(false);
     }
   });
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Logged out successfully");
+    setDropdownOpen(false);
+    navigate("/");
+  };
 
   return (
     <motion.div
@@ -62,20 +89,125 @@ export function LandingNavbar() {
             </a>
           </div>
 
-          {/* Auth Buttons */}
+          {/* Auth Buttons / User Menu */}
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate("/login")}
-              className="px-6 py-3 text-sm font-semibold text-black bg-white border-2 border-black hover:bg-zinc-50 transition-colors tracking-wide"
-            >
-              Login
-            </button>
-            <button
-              onClick={() => navigate("/signup")}
-              className="px-6 py-3 text-sm font-semibold text-black bg-green-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
-            >
-              Start Now
-            </button>
+            {isAuthenticated && user ? (
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-black bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
+                >
+                  <div className="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center font-bold text-xs">
+                    {user.username.charAt(0).toUpperCase()}
+                  </div>
+                  <span>{user.username}</span>
+                  <svg
+                    className={`w-4 h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {/* Dropdown Menu */}
+                {dropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute right-0 mt-2 w-56 bg-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+                  >
+                    <div className="p-4 border-b-2 border-black">
+                      <p className="text-xs font-semibold text-zinc-600 uppercase tracking-wide">
+                        Signed in as
+                      </p>
+                      <p className="text-sm font-bold text-black mt-1">
+                        {user.email}
+                      </p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-xs font-semibold text-zinc-600">
+                          Credits:
+                        </span>
+                        <span className="text-sm font-bold text-green-500">
+                          {user.credits}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="py-2">
+                      <button
+                        onClick={() => {
+                          navigate("/studio");
+                          setDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-3 text-left text-sm font-semibold text-black hover:bg-green-500 transition-colors border-b-2 border-black"
+                      >
+                        <div className="flex items-center gap-3">
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                          Studio
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={handleLogout}
+                        className="w-full px-4 py-3 text-left text-sm font-semibold text-black hover:bg-red-500 hover:text-white transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                            />
+                          </svg>
+                          Logout
+                        </div>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate("/login")}
+                  className="px-6 py-3 text-sm font-semibold text-black bg-white border-2 border-black hover:bg-zinc-50 transition-colors tracking-wide"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => navigate("/signup")}
+                  className="px-6 py-3 text-sm font-semibold text-black bg-green-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
+                >
+                  Start Now
+                </button>
+              </>
+            )}
           </div>
         </div>
       </nav>

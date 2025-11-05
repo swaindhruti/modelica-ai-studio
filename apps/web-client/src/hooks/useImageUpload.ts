@@ -1,20 +1,13 @@
 import { useState, useRef } from "react";
 import { toast } from "react-hot-toast";
-import { generationsApi } from "../lib/api";
 
-interface ImageKitUploadSuccessResult {
-  url: string;
-  thumbnailUrl: string;
-  fileId: string;
-  name: string;
-  size: number;
-  filePath: string;
-}
-
-interface ImageKitAuthResponse {
-  signature: string;
-  expire: number;
-  token: string;
+interface CloudinaryUploadSuccessResult {
+  secure_url: string;
+  public_id: string;
+  format: string;
+  width: number;
+  height: number;
+  bytes: number;
 }
 
 interface UseImageUploadReturn {
@@ -23,8 +16,7 @@ interface UseImageUploadReturn {
   upload: (file: File) => Promise<void>;
   isUploading: boolean;
   uploadInputRef: React.RefObject<HTMLInputElement | null>;
-  authenticator: () => Promise<ImageKitAuthResponse>;
-  handleUploadSuccess: (res: ImageKitUploadSuccessResult) => void;
+  handleUploadSuccess: (res: CloudinaryUploadSuccessResult) => void;
   handleUploadError: (err: Error) => void;
   setImagePreview: (preview: string | null) => void;
   clearImage: () => void;
@@ -37,35 +29,25 @@ export function useImageUpload(): UseImageUploadReturn {
   const [isUploading, setIsUploading] = useState(false);
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
-  const authenticator = async () => {
-    try {
-      const response = await generationsApi.getImagekitAuth();
-      return response.data;
-    } catch (error) {
-      console.error("ImageKit auth error:", error);
-      throw new Error("Failed to authenticate with ImageKit");
-    }
-  };
-
   const upload = async (file: File) => {
     setIsUploading(true);
     toast.loading("Uploading image...");
 
     try {
-      const authData = await authenticator();
+      const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string;
+      const uploadPreset = import.meta.env
+        .VITE_CLOUDINARY_UPLOAD_PRESET as string;
+
+      if (!cloudName || !uploadPreset) {
+        throw new Error("Cloudinary configuration is missing");
+      }
+
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("fileName", file.name);
-      formData.append(
-        "publicKey",
-        import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY as string
-      );
-      formData.append("signature", authData.signature);
-      formData.append("expire", authData.expire.toString());
-      formData.append("token", authData.token);
+      formData.append("upload_preset", uploadPreset);
 
       const response = await fetch(
-        "https://upload.imagekit.io/api/v1/files/upload",
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
         {
           method: "POST",
           body: formData,
@@ -75,11 +57,11 @@ export function useImageUpload(): UseImageUploadReturn {
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          `ImageKit upload failed: ${errorData.message || "Unknown error"}`
+          `Cloudinary upload failed: ${errorData.error?.message || "Unknown error"}`
         );
       }
 
-      const result: ImageKitUploadSuccessResult = await response.json();
+      const result: CloudinaryUploadSuccessResult = await response.json();
       handleUploadSuccess(result);
     } catch (error) {
       handleUploadError(error as Error);
@@ -89,14 +71,14 @@ export function useImageUpload(): UseImageUploadReturn {
     }
   };
 
-  const handleUploadSuccess = (res: ImageKitUploadSuccessResult) => {
-    setImageUrl(res.url);
-    setImagePreview(res.url);
+  const handleUploadSuccess = (res: CloudinaryUploadSuccessResult) => {
+    setImageUrl(res.secure_url);
+    setImagePreview(res.secure_url);
     toast.success("Image uploaded successfully!");
   };
 
   const handleUploadError = (err: Error) => {
-    console.error("ImageKit upload error:", err);
+    console.error("Cloudinary upload error:", err);
     toast.error(err.message || "Image upload failed. Please try again.");
   };
 
@@ -111,7 +93,6 @@ export function useImageUpload(): UseImageUploadReturn {
     upload,
     isUploading,
     uploadInputRef,
-    authenticator,
     handleUploadSuccess,
     handleUploadError,
     setImagePreview,

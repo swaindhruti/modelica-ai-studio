@@ -60,6 +60,4 @@ export const generationsApi = {
   list: () => apiClient.get("/generations"),
 
   delete: (id: number) => apiClient.delete(`/generations/${id}`),
-
-  getImagekitAuth: () => apiClient.get("/auth/imagekit"),
 };

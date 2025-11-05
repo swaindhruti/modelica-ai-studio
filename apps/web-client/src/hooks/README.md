@@ -28,7 +28,7 @@ function MyComponent() {
     handleGenerate({
       prompt: "A beautiful landscape",
       style: "photorealistic",
-      imageUrl: "https://ik.imagekit.io/...", // optional
+      imageUrl: "https://res.cloudinary.com/...", // optional
     });
   };
 
@@ -66,7 +66,7 @@ function MyComponent() {
 
 ### `useImageUpload`
 
-Manages ImageKit file upload flow with authentication.
+Manages Cloudinary file upload flow with direct client-side upload.
 
 **Location:** `src/hooks/useImageUpload.ts`
 
@@ -74,57 +74,48 @@ Manages ImageKit file upload flow with authentication.
 
 ```tsx
 import { useImageUpload } from "@/hooks";
-import { IKContext, IKUpload } from "imagekitio-react";
 
 function MyComponent() {
-  const {
-    imageUrl,
-    imagePreview,
-    uploadInputRef,
-    authenticator,
-    handleUploadSuccess,
-    handleUploadError,
-    setImagePreview,
-    clearImage,
-  } = useImageUpload();
+  const { imageUrl, imagePreview, upload, isUploading, clearImage } =
+    useImageUpload();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      upload(file);
+    }
+  };
 
   return (
-    <IKContext
-      urlEndpoint={process.env.VITE_IMAGEKIT_URL_ENDPOINT}
-      publicKey={process.env.VITE_IMAGEKIT_PUBLIC_KEY}
-      authenticator={authenticator}
-    >
-      <IKUpload
-        fileName="upload.jpg"
-        onSuccess={handleUploadSuccess}
-        onError={handleUploadError}
-        inputRef={uploadInputRef}
-      />
+    <div>
+      <input type="file" onChange={handleFileChange} disabled={isUploading} />
       {imagePreview && <img src={imagePreview} alt="Preview" />}
       <button onClick={clearImage}>Clear Image</button>
-    </IKContext>
+    </div>
   );
 }
 ```
 
 **Returns:**
 
-- `imageUrl` - The ImageKit URL of the uploaded image
+- `imageUrl` - The Cloudinary secure URL of the uploaded image
 - `imagePreview` - Preview URL for displaying the image
 - `uploadInputRef` - Ref for the hidden file input element
-- `authenticator()` - Function that fetches ImageKit auth params from backend
-- `handleUploadSuccess(result)` - Success handler for IKUpload
-- `handleUploadError(error)` - Error handler for IKUpload
+- `upload(file)` - Function to upload a file to Cloudinary
+- `isUploading` - Boolean indicating upload progress
+- `handleUploadSuccess(result)` - Success handler (for internal use)
+- `handleUploadError(error)` - Error handler (for internal use)
 - `setImagePreview(url)` - Manually set preview URL
 - `clearImage()` - Clear both imageUrl and imagePreview
 - `setImageUrl(url)` - Manually set the image URL
 
 **Features:**
 
-- Automatic authentication with backend
+- Direct upload to Cloudinary (no server involvement)
 - Toast notifications on success/error
 - Preview state management
 - TypeScript type safety
+- Upload progress tracking
 
 ---
 

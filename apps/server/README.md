@@ -5,7 +5,7 @@ A professional-grade REST API built with Fastify, TypeScript, PostgreSQL, and Dr
 ## 🚀 Features
 
 - **Authentication**: JWT-based auth with bcrypt password hashing
-- **ImageKit Integration**: Cloud-based image storage with client-side upload
+- **Cloudinary Integration**: Cloud-based image storage with client-side upload
 - **AI Generations**: Simulated AI model with realistic delays and failure rates
 - **Database**: PostgreSQL with Drizzle ORM
 - **Logging**: Structured logging with Pino
@@ -42,11 +42,6 @@ NODE_ENV=development
 PORT=3000
 DATABASE_URL=postgresql://user:password@localhost:5432/modelia_db
 JWT_SECRET=your-secret-key-at-least-32-characters-long
-
-# ImageKit Configuration
-IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
-IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
-IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your_imagekit_id
 ```
 
 ### 3. Database Setup
@@ -142,7 +137,7 @@ Create a new AI generation with optional image URL.
 {
   "prompt": "A beautiful sunset over mountains",
   "style": "photorealistic",
-  "imageUrl": "https://ik.imagekit.io/your-id/image.jpg" // Optional
+  "imageUrl": "https://res.cloudinary.com/your-cloud/image/upload/v1234567890/sample.jpg" // Optional
 }
 ```
 
@@ -237,7 +232,6 @@ Tests cover:
 
 - **Auth Routes**: Signup, login, validation, error handling
 - **Generation Routes**: Create, list, delete operations with authentication
-- **ImageKit Routes**: Authentication parameter generation
 
 All tests use in-memory database connections and clean up after themselves.
 
@@ -260,8 +254,7 @@ apps/server/
 ├── src/
 │   ├── __tests__/
 │   │   ├── auth.test.ts        # Authentication route tests
-│   │   ├── generations.test.ts # Generation route tests
-│   │   └── imagekit.test.ts    # ImageKit route tests
+│   │   └── generations.test.ts # Generation route tests
 │   ├── config/
 │   │   └── env.ts              # Environment variable validation
 │   ├── db/
@@ -271,10 +264,8 @@ apps/server/
 │   │   └── auth.ts             # JWT authentication middleware
 │   ├── routes/
 │   │   ├── auth.ts             # Authentication routes
-│   │   ├── generations.ts      # Generation routes
-│   │   └── imagekit.ts         # ImageKit authentication routes
+│   │   └── generations.ts      # Generation routes
 │   └── server.ts               # Main server entry point
-├── uploads/                    # Uploaded images (deprecated, using ImageKit)
 ├── jest.config.js              # Jest configuration
 ├── .env                        # Environment variables (not in git)
 ├── .env.example                # Environment template
@@ -284,16 +275,16 @@ apps/server/
 
 ## 🌟 Advanced Features
 
-### ImageKit Integration
+### Cloudinary Integration
 
-Images are uploaded directly from the client to ImageKit cloud storage. The server provides temporary authentication tokens via the `/auth/imagekit` endpoint.
+Images are uploaded directly from the client to Cloudinary cloud storage. The server only stores the public URL returned by Cloudinary.
 
 **Benefits:**
 
 - No server storage needed
 - Fast global CDN delivery
 - Automatic image optimization
-- Secure client-side uploads
+- Secure unsigned client-side uploads with upload presets
 
 ### Structured Logging
 

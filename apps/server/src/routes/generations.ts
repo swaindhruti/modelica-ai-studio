@@ -126,8 +126,8 @@ export async function generationRoutes(fastify: FastifyInstance) {
           return reply.status(403).send({ error: "Unauthorized" });
         }
 
-        // For ImageKit, we don't delete the file from our server.
-        // Deletion from ImageKit can be handled separately if needed.
+        // Note: Cloudinary URLs are stored but images are not deleted from Cloudinary
+        // Image deletion from Cloudinary can be handled separately if needed
 
         // Delete the generation from database
         await db.delete(generations).where(eq(generations.id, generationId));

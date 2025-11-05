@@ -7,7 +7,6 @@ import { env } from "./config/env.ts";
 import { connectDB } from "./db/connection.ts";
 import { authRoutes } from "./routes/auth.ts";
 import { generationRoutes } from "./routes/generations.ts";
-import { imagekitRoutes } from "./routes/imagekit.ts";
 
 export async function build(
   opts: FastifyServerOptions = {}
@@ -34,6 +33,8 @@ export async function build(
   await fastify.register(cors, {
     origin: env.NODE_ENV === "production" ? false : "*",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   });
 
   // Register JWT
@@ -44,7 +45,6 @@ export async function build(
   // Register routes
   await fastify.register(authRoutes, { prefix: "/auth" });
   await fastify.register(generationRoutes, { prefix: "/generations" });
-  await fastify.register(imagekitRoutes);
 
   // Health check route
   fastify.get("/health", async () => {
