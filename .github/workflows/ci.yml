@@ -92,6 +92,7 @@ jobs:
           files: ./apps/server/coverage/lcov.info
           flags: backend
           name: backend-coverage
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   test-frontend:
     name: Frontend Tests
@@ -122,6 +123,7 @@ jobs:
           files: ./apps/web-client/coverage/lcov.info
           flags: frontend
           name: frontend-coverage
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   build:
     name: Build
