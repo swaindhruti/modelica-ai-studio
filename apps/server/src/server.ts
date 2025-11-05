@@ -32,18 +32,23 @@ export async function build(
   });
 
   // Register CORS
-  // Allow requests from any origin for now (we can restrict later)
+  const allowedOrigins = [
+    "https://modelica-ai-atudio.netlify.app", // Production
+    "http://localhost:5173", // Local Vite/React dev server
+  ];
+
   await fastify.register(cors, {
     origin: (origin, cb) => {
-      // Allow all origins - you can restrict this later
-      cb(null, true);
+      // origin will be undefined for "same-origin" requests (e.g., from Postman)
+      if (!origin || allowedOrigins.includes(origin)) {
+        cb(null, true); // Allow
+        return;
+      }
+      cb(new Error("Not allowed by CORS"), false); // Block
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
-    exposedHeaders: ["Content-Type", "Authorization"],
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   });
 
   // Register JWT
