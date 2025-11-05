@@ -15,6 +15,8 @@ export async function build(
     logger:
       opts.logger !== undefined
         ? opts.logger
+        : env.NODE_ENV === "production"
+        ? true // Simple logging in production
         : {
             level: "info",
             transport: {
@@ -53,8 +55,14 @@ export async function build(
     return { status: "ok", timestamp: new Date().toISOString() };
   });
 
-  // Connect to database
-  await connectDB(fastify.log);
+  // Connect to database (but don't crash if it fails initially)
+  try {
+    await connectDB(fastify.log);
+  } catch (error) {
+    fastify.log.error("Failed to connect to database on startup");
+    fastify.log.error(error);
+    // Don't throw - let the server start anyway
+  }
 
   return fastify;
 }
@@ -64,14 +72,26 @@ async function start() {
   try {
     const fastify = await build();
 
+    // Graceful shutdown handler
+    const signals = ["SIGINT", "SIGTERM"];
+    signals.forEach((signal) => {
+      process.on(signal, async () => {
+        fastify.log.info(`Received ${signal}, closing server...`);
+        await fastify.close();
+        process.exit(0);
+      });
+    });
+
     // Start listening
     await fastify.listen({
       port: env.PORT,
       host: "0.0.0.0",
     });
 
-    fastify.log.info(`🚀 Server running on http://localhost:${env.PORT}`);
+    fastify.log.info(`🚀 Server running on port ${env.PORT}`);
+    fastify.log.info(`Environment: ${env.NODE_ENV}`);
   } catch (err) {
+    console.error("❌ Server failed to start:");
     console.error(err);
     process.exit(1);
   }

@@ -50,9 +50,6 @@ importers:
       pino:
         specifier: ^10.1.0
         version: 10.1.0
-      pino-pretty:
-        specifier: ^13.1.2
-        version: 13.1.2
       sharp:
         specifier: ^0.34.4
         version: 0.34.4
@@ -84,6 +81,9 @@ importers:
       jest:
         specifier: ^30.2.0
         version: 30.2.0(@types/node@22.19.0)(esbuild-register@3.6.0(esbuild@0.25.12))
+      pino-pretty:
+        specifier: ^13.1.2
+        version: 13.1.2
       supertest:
         specifier: ^7.1.4
         version: 7.1.4
