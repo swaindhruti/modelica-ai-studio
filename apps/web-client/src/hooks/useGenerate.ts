@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { UseMutationResult } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
@@ -20,6 +20,7 @@ interface UseGenerateReturn {
   latestGeneration: Generation | null;
   setLatestGeneration: (generation: Generation | null) => void;
   handleGenerate: (data: GenerateData) => void;
+  cancelGenerate: () => void;
 }
 
 export function useGenerate(): UseGenerateReturn {
@@ -27,13 +28,20 @@ export function useGenerate(): UseGenerateReturn {
     null
   );
   const queryClient = useQueryClient();
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const generateMutation = useMutation<
     GenerateResponse,
     ApiError,
     GenerateData
   >({
-    mutationFn: (data) => generationsApi.create(data).then((res) => res.data),
+    mutationFn: (data) => {
+      // Create a new AbortController for this request
+      abortControllerRef.current = new AbortController();
+      return generationsApi
+        .create(data, abortControllerRef.current.signal)
+        .then((res) => res.data);
+    },
     retry: (failureCount, error: ApiError) => {
       // Retry up to 3 times only for 503 errors
       if (error?.response?.status === 503 && failureCount < 3) {
@@ -42,7 +50,11 @@ export function useGenerate(): UseGenerateReturn {
       }
       return false;
     },
-    retryDelay: 1000,
+    retryDelay: (attemptIndex) => {
+      // Exponential backoff: 1s, 2s, 4s
+      const delay = Math.min(1000 * Math.pow(2, attemptIndex), 10000);
+      return delay;
+    },
     onSuccess: (data) => {
       toast.success("Generation created successfully!");
 
@@ -120,10 +132,19 @@ export function useGenerate(): UseGenerateReturn {
     generateMutation.mutate(data);
   };
 
+  const cancelGenerate = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+      toast.error("Generation cancelled");
+    }
+  };
+
   return {
     generateMutation,
     latestGeneration,
     setLatestGeneration,
     handleGenerate,
+    cancelGenerate,
   };
 }

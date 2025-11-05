@@ -54,8 +54,10 @@ export const authApi = {
 };
 
 export const generationsApi = {
-  create: (data: { prompt: string; style?: string; imageUrl?: string }) =>
-    apiClient.post("/generations", data),
+  create: (
+    data: { prompt: string; style?: string; imageUrl?: string },
+    signal?: AbortSignal
+  ) => apiClient.post("/generations", data, { signal }),
 
   list: () => apiClient.get("/generations"),
 

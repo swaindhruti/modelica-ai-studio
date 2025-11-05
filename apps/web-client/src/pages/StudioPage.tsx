@@ -42,6 +42,7 @@ export function StudioPage() {
     latestGeneration,
     setLatestGeneration,
     handleGenerate: handleGenerateHook,
+    cancelGenerate,
   } = useGenerate();
 
   const handleGenerate = (e: React.FormEvent) => {
@@ -214,6 +215,15 @@ export function StudioPage() {
                     "Generate"
                   )}
                 </button>
+                {generateMutation.isPending && (
+                  <button
+                    type="button"
+                    onClick={cancelGenerate}
+                    className="px-6 py-4 font-semibold text-base text-black bg-red-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150"
+                  >
+                    Cancel
+                  </button>
+                )}
               </div>
 
               {generateMutation.isError && !generateMutation.isPending && (
