@@ -1,15 +1,15 @@
 import { z } from "zod";
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { db } from "../db/connection.ts";
-import { generations } from "../db/schema.ts";
+import { db } from "../db/connection.js";
+import { generations } from "../db/schema.js";
 import { eq, desc } from "drizzle-orm";
-import { authMiddleware } from "../middleware/auth.ts";
+import { authMiddleware } from "../middleware/auth.js";
 
 // Validation schema
 const createGenerationSchema = z.object({
   prompt: z.string().min(1, "Prompt is required").max(1024),
   style: z.string().optional(),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.url().optional(),
 });
 
 export async function generationRoutes(fastify: FastifyInstance) {

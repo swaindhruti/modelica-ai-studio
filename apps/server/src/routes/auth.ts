@@ -1,8 +1,8 @@
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { db } from "../db/connection.ts";
-import { users } from "../db/schema.ts";
+import { db } from "../db/connection.js";
+import { users } from "../db/schema.js";
 import { eq } from "drizzle-orm";
 
 // Validation schemas

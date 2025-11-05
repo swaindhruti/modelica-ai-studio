@@ -3,10 +3,10 @@ import Fastify from "fastify";
 import type { FastifyInstance, FastifyServerOptions } from "fastify";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
-import { env } from "./config/env.ts";
-import { connectDB } from "./db/connection.ts";
-import { authRoutes } from "./routes/auth.ts";
-import { generationRoutes } from "./routes/generations.ts";
+import { env } from "./config/env.js";
+import { connectDB } from "./db/connection.js";
+import { authRoutes } from "./routes/auth.js";
+import { generationRoutes } from "./routes/generations.js";
 
 export async function build(
   opts: FastifyServerOptions = {}

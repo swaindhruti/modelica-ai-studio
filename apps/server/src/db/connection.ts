@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import * as schema from "./schema.ts";
+import * as schema from "./schema.js";
 import type { FastifyBaseLogger } from "fastify";
 
 // Create a PostgreSQL connection pool
