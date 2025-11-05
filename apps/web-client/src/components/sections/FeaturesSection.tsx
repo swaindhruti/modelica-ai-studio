@@ -76,11 +76,11 @@ function FeatureCard({
       {/* Radial gradient overlay that follows cursor */}
       {ripple && (
         <div
-          className="absolute w-full h-full opacity-30 transition-opacity duration-300"
+          className="absolute w-full h-full opacity-30 transition-all duration-500 ease-out"
           style={{
             left: 0,
             top: 0,
-            background: `radial-gradient(circle at ${ripple.x}% ${ripple.y}%, #22c55e 0%, transparent 60%)`,
+            background: `radial-gradient(circle 200px at ${ripple.x}% ${ripple.y}%, #22c55e 0%, #22c55e 20%, transparent 70%)`,
           }}
         ></div>
       )}
