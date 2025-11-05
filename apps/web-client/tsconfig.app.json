@@ -24,12 +24,12 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "src"
+    "src/**/*",
+    "src/vite-env.d.ts"
   ],
   "exclude": [
     "src/**/*.test.ts",
