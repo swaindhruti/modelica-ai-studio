@@ -26,6 +26,17 @@ export default [
     },
   },
   {
+    files: ["**/*.cjs"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "commonjs",
+      globals: {
+        ...globals.node,
+        ...globals.commonjs,
+      },
+    },
+  },
+  {
     ignores: ["dist/**", "coverage/**", "node_modules/**", "drizzle/**"],
   },
 ];
