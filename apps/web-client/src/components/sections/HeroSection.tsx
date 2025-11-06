@@ -280,6 +280,13 @@ export function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [useAnimated] = useState(true);
   const [currentAction, setCurrentAction] = useState("wave");
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Trigger animation on mount
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Cycle through different actions every 5 seconds
   useEffect(() => {
@@ -307,80 +314,95 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="max-w-7xl mx-auto px-6 pt-16 pb-12 h-screen">
-      <div className="grid lg:grid-cols-2 gap-12 items-center">
-        {/* Left side - Text content */}
-        <div className="text-center lg:text-left">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-medium text-black mb-6 leading-tight tracking-tight">
-            Create Stunning{" "}
-            <span className="relative inline-block px-2">
-              <span className="relative z-10 text-black">Fashion Models</span>
-              <span className="absolute inset-0 bg-yellow-300"></span>
-            </span>
-          </h1>
-          <p className="text-lg text-zinc-700 mb-10">
-            Transform your ideas into stunning visuals with AI-powered model
-            generation. Professional quality in seconds, not hours.
-          </p>
-          <div className="flex gap-4 justify-center lg:justify-start">
-            <button
-              onClick={() => navigate("/signup")}
-              className="px-8 py-3 font-semibold text-black bg-green-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
-            >
-              Get Started
-            </button>
-            <button
-              onClick={() => navigate("/login")}
-              className="px-8 py-3 font-semibold text-black bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
-            >
-              Watch Demo
-            </button>
+    <section className="w-full h-screen flex items-center -mt-20 sm:-mt-24 md:-mt-28 lg:-mt-32 pt-20 sm:pt-24 md:pt-28 lg:pt-32">
+      <div
+        className={`max-w-7xl mx-auto px-4 sm:px-6 w-full transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 lg:gap-12 items-center">
+          {/* Left side - Text content */}
+          <div
+            className={`text-center lg:text-left order-2 lg:order-1 transition-all duration-1000 delay-200 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"}`}
+          >
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium text-black mb-4 sm:mb-5 md:mb-6 leading-tight tracking-tight">
+              Create Stunning{" "}
+              <span className="relative inline-block px-1 sm:px-2">
+                <span className="relative z-10 text-black">Fashion Models</span>
+                <span className="absolute inset-0 bg-yellow-300"></span>
+              </span>
+            </h1>
+            <p className="text-base sm:text-lg md:text-xl text-zinc-700 mb-6 sm:mb-8 md:mb-10 px-2 sm:px-0">
+              Transform your ideas into stunning visuals with AI-powered model
+              generation. Professional quality in seconds, not hours.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start px-4 sm:px-0">
+              <button
+                onClick={() => navigate("/signup")}
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 font-semibold text-sm sm:text-base text-black bg-green-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
+              >
+                Get Started
+              </button>
+              <button
+                onClick={() => navigate("/login")}
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 font-semibold text-sm sm:text-base text-black bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
+              >
+                Watch Demo
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* Right side - 3D Animated Humanoid - No border */}
-        <div className="relative aspect-square">
-          <div className="w-full h-full flex items-center justify-center">
-            <Canvas shadows camera={{ position: [0, 1, 3], fov: 50 }}>
-              <PerspectiveCamera makeDefault position={[0, 1, 2.5]} />
-              <ambientLight intensity={0.7} />
-              <pointLight
-                position={[-1, 2, 3]}
-                intensity={1.5}
-                color="#22c55e"
-              />
-              <pointLight
-                position={[1, 2, 3]}
-                intensity={1.5}
-                color="#fde047"
-              />
-              <pointLight position={[0, 3, -2]} intensity={1} color="white" />
+          {/* Right side - 3D Animated Humanoid - No border */}
+          <div
+            className={`relative aspect-square w-full max-w-md mx-auto lg:max-w-none order-1 lg:order-2 transition-all duration-1000 delay-400 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"}`}
+          >
+            <div className="w-full h-full flex items-center justify-center">
+              <Canvas shadows camera={{ position: [0, 1, 3], fov: 50 }}>
+                <PerspectiveCamera makeDefault position={[0, 1, 2.5]} />
+                <ambientLight intensity={0.7} />
+                <pointLight
+                  position={[-1, 2, 3]}
+                  intensity={1.5}
+                  color="#22c55e"
+                />
+                <pointLight
+                  position={[1, 2, 3]}
+                  intensity={1.5}
+                  color="#fde047"
+                />
+                <pointLight position={[0, 3, -2]} intensity={1} color="white" />
 
-              <Suspense fallback={null}>
-                {useAnimated ? (
-                  <AnimatedModel
-                    action={currentAction}
-                    mousePosition={mousePosition}
-                  />
-                ) : (
-                  <FashionMannequin />
-                )}
-              </Suspense>
+                <Suspense fallback={null}>
+                  {useAnimated ? (
+                    <AnimatedModel
+                      action={currentAction}
+                      mousePosition={mousePosition}
+                    />
+                  ) : (
+                    <FashionMannequin />
+                  )}
+                </Suspense>
 
-              <Environment preset="studio" />
-              <OrbitControls
-                target={[0, 1, 0]}
-                enableZoom={false}
-                enablePan={false}
-                minPolarAngle={Math.PI / 4}
-                maxPolarAngle={Math.PI / 1.5}
-                autoRotate={false}
-              />
-            </Canvas>
+                <Environment preset="studio" />
+                <OrbitControls
+                  target={[0, 1, 0]}
+                  enableZoom={false}
+                  enablePan={false}
+                  minPolarAngle={Math.PI / 4}
+                  maxPolarAngle={Math.PI / 1.5}
+                  autoRotate={false}
+                />
+              </Canvas>
+            </div>
+            {/* Animated gradient orbs - modern decorative elements */}
+            <div
+              className={`absolute -top-8 -right-8 w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 bg-gradient-to-br from-yellow-300 to-yellow-400 rounded-full blur-2xl opacity-30 -z-10 transition-all duration-1000 delay-500 ${isVisible ? "scale-100" : "scale-0"}`}
+            ></div>
+            <div
+              className={`absolute -bottom-8 -left-8 w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 bg-gradient-to-tr from-green-400 to-green-500 rounded-full blur-2xl opacity-30 -z-10 transition-all duration-1000 delay-600 ${isVisible ? "scale-100" : "scale-0"}`}
+            ></div>
+            <div
+              className={`absolute top-1/2 -right-4 w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-bl from-green-300 to-green-400 rounded-full blur-xl opacity-20 -z-10 transition-all duration-1000 delay-700 ${isVisible ? "scale-100" : "scale-0"}`}
+            ></div>
           </div>
-          {/* Decorative elements - now larger and more visible */}
-          <div className="absolute -top-8 -right-8 w-32 h-32 bg-yellow-300 border-2 border-black -z-10"></div>
-          <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-green-500 border-2 border-black -z-10"></div>
         </div>
       </div>
     </section>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ImageUpload } from "../components/ImageUpload";
 import { GenerationHistory } from "../components/GenerationHistory";
 import { GenerationModal } from "../components/GenerationModal";
@@ -21,6 +21,13 @@ export function StudioPage() {
   const [style, setStyle] = useState(STYLES[0].value);
   const [selectedGeneration, setSelectedGeneration] =
     useState<Generation | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Entry animation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 200);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Custom hooks
   const {
@@ -105,7 +112,9 @@ export function StudioPage() {
 
       <main className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
         {/* Header */}
-        <div className="mb-12">
+        <div
+          className={`mb-12 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+        >
           <h1 className="text-4xl md:text-5xl font-medium text-black mb-4 tracking-tight">
             AI Fashion Studio
           </h1>
@@ -117,7 +126,9 @@ export function StudioPage() {
 
         <div className="space-y-8">
           {/* Main generation form */}
-          <div className="bg-white border-2 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div
+            className={`bg-white border-2 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-700 delay-200 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+          >
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-semibold text-black tracking-tight">
                 Create Generation
@@ -253,7 +264,9 @@ export function StudioPage() {
 
           {/* Latest Generation Result */}
           {latestGeneration && (
-            <div className="bg-green-500 border-2 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div
+              className={`bg-green-500 border-2 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+            >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-semibold text-black tracking-tight">
                   ✨ Latest Generation
@@ -303,7 +316,9 @@ export function StudioPage() {
           )}
 
           {/* Recent Generations History */}
-          <div className="bg-white border-2 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div
+            className={`bg-white border-2 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-700 delay-400 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+          >
             <GenerationHistory
               generations={generations}
               isLoading={isLoadingHistory}

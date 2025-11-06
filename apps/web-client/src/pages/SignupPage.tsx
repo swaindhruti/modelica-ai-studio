@@ -17,7 +17,14 @@ export function SignupPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
+
+  // Entry animation
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -59,9 +66,38 @@ export function SignupPage() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 grid-bg">
-      {/* Left side - 3D Model */}
-      <div className="hidden lg:flex items-center justify-center p-12">
-        <div className="w-full max-w-lg aspect-square">
+      {/* Left side - 3D Model with decorative elements */}
+      <div
+        className={`hidden lg:flex items-center justify-center p-12 relative transition-all duration-1000 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"}`}
+      >
+        <div className="w-full max-w-lg aspect-square relative">
+          {/* Decorative text overlay */}
+          <div className="absolute top-8 left-8 z-10">
+            <h2 className="text-5xl font-medium text-black mb-2 tracking-tight">
+              Create
+            </h2>
+            <h3 className="text-3xl font-medium tracking-tight">
+              <span className="relative inline-block px-2">
+                <span className="relative z-10 text-black">Amazing</span>
+                <span className="absolute inset-0 bg-green-500"></span>
+              </span>
+            </h3>
+            <h3 className="text-3xl font-medium text-black mt-1 tracking-tight">
+              Fashion!
+            </h3>
+          </div>
+
+          {/* Animated gradient orbs */}
+          <div
+            className={`absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-br from-green-300 to-green-400 rounded-full blur-2xl opacity-30 -z-10 transition-all duration-1000 delay-300 ${isVisible ? "scale-100" : "scale-0"}`}
+          ></div>
+          <div
+            className={`absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-tr from-yellow-400 to-yellow-500 rounded-full blur-2xl opacity-30 -z-10 transition-all duration-1000 delay-400 ${isVisible ? "scale-100" : "scale-0"}`}
+          ></div>
+          <div
+            className={`absolute top-1/2 -right-4 w-24 h-24 bg-gradient-to-bl from-green-300 to-green-400 rounded-full blur-xl opacity-20 -z-10 transition-all duration-1000 delay-500 ${isVisible ? "scale-100" : "scale-0"}`}
+          ></div>
+
           <Canvas shadows>
             <PerspectiveCamera makeDefault position={[0, 1, 2.5]} />
             <ambientLight intensity={0.7} />
@@ -87,7 +123,9 @@ export function SignupPage() {
       </div>
 
       {/* Right side - Signup Form */}
-      <div className="flex items-center justify-center p-6 lg:p-12">
+      <div
+        className={`flex items-center justify-center p-6 lg:p-12 transition-all duration-1000 delay-200 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"}`}
+      >
         <div className="w-full max-w-md">
           <div className="bg-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-8 space-y-8">
             {/* Header */}

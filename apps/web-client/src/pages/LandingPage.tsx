@@ -23,8 +23,8 @@ export function LandingPage() {
     <div className="min-h-screen bg-white grid-bg">
       <LandingNavbar />
 
-      {/* Add top padding to account for fixed navbar */}
-      <div className="pt-32">
+      {/* Add top padding to account for fixed navbar - responsive */}
+      <div className="pt-20 sm:pt-24 md:pt-28 lg:pt-32">
         <HeroSection />
         <FeaturesSection />
         <PricingSection />

@@ -9,8 +9,16 @@ export function LandingNavbar() {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user, isAuthenticated, logout } = useAuthStore();
+
+  // Entry animation on mount
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious();
@@ -51,17 +59,47 @@ export function LandingNavbar() {
       }}
       animate={hidden ? "hidden" : "visible"}
       transition={{ duration: 0.35, ease: "easeInOut" }}
-      className="fixed top-0 left-0 right-0 z-50 pt-8 px-8"
+      className={`fixed top-0 left-0 right-0 z-50 pt-4 md:pt-8 px-4 md:px-8 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}
     >
-      <nav className="max-w-7xl mx-auto bg-white border-2 border-black px-8 py-6">
+      <nav className="max-w-7xl mx-auto bg-white border-2 border-black px-4 md:px-8 py-4 md:py-6">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <span className="text-2xl font-bold text-black tracking-tight">
+            <span className="text-lg sm:text-xl md:text-2xl font-bold text-black tracking-tight">
               Modelica AI Studio
             </span>
           </div>
 
-          {/* Navigation Links */}
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-black hover:text-green-500 transition-colors"
+            aria-label="Toggle menu"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {mobileMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+
+          {/* Navigation Links - Desktop */}
           <div className="hidden md:flex items-center gap-8">
             <a
               href="#features"
@@ -89,20 +127,20 @@ export function LandingNavbar() {
             </a>
           </div>
 
-          {/* Auth Buttons / User Menu */}
-          <div className="flex items-center gap-4">
+          {/* Auth Buttons / User Menu - Desktop */}
+          <div className="hidden md:flex items-center gap-4">
             {isAuthenticated && user ? (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-black bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
+                  className="flex items-center gap-2 md:gap-3 px-3 md:px-6 py-2 md:py-3 text-xs md:text-sm font-semibold text-black bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
                 >
-                  <div className="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center font-bold text-xs">
+                  <div className="w-6 h-6 md:w-8 md:h-8 bg-green-500 border-2 border-black flex items-center justify-center font-bold text-xs">
                     {user.username.charAt(0).toUpperCase()}
                   </div>
-                  <span>{user.username}</span>
+                  <span className="hidden sm:inline">{user.username}</span>
                   <svg
-                    className={`w-4 h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+                    className={`w-3 h-3 md:w-4 md:h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -196,13 +234,13 @@ export function LandingNavbar() {
               <>
                 <button
                   onClick={() => navigate("/login")}
-                  className="px-6 py-3 text-sm font-semibold text-black bg-white border-2 border-black hover:bg-zinc-50 transition-colors tracking-wide"
+                  className="px-3 md:px-6 py-2 md:py-3 text-xs md:text-sm font-semibold text-black bg-white border-2 border-black hover:bg-zinc-50 transition-colors tracking-wide"
                 >
                   Login
                 </button>
                 <button
                   onClick={() => navigate("/signup")}
-                  className="px-6 py-3 text-sm font-semibold text-black bg-green-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
+                  className="px-3 md:px-6 py-2 md:py-3 text-xs md:text-sm font-semibold text-black bg-green-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
                 >
                   Start Now
                 </button>
@@ -210,6 +248,71 @@ export function LandingNavbar() {
             )}
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden mt-4 pt-4 border-t-2 border-black"
+          >
+            <div className="flex flex-col space-y-3">
+              <a
+                href="#features"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-base font-semibold text-black hover:text-green-500 transition-colors tracking-wide py-2"
+              >
+                Features
+              </a>
+              <a
+                href="#pricing"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-base font-semibold text-black hover:text-green-500 transition-colors tracking-wide py-2"
+              >
+                Pricing
+              </a>
+              <a
+                href="#how-it-works"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-base font-semibold text-black hover:text-green-500 transition-colors tracking-wide py-2"
+              >
+                How it Works
+              </a>
+              <a
+                href="#contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-base font-semibold text-black hover:text-green-500 transition-colors tracking-wide py-2"
+              >
+                Contact Us
+              </a>
+
+              {/* Mobile Auth Buttons */}
+              {!isAuthenticated && (
+                <div className="flex flex-col gap-3 pt-3 border-t-2 border-black">
+                  <button
+                    onClick={() => {
+                      navigate("/login");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full px-4 py-3 text-sm font-semibold text-black bg-white border-2 border-black hover:bg-zinc-50 transition-colors tracking-wide"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate("/signup");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full px-4 py-3 text-sm font-semibold text-black bg-green-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
+                  >
+                    Start Now
+                  </button>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
       </nav>
     </motion.div>
   );

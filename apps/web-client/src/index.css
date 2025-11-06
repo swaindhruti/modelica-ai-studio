@@ -47,6 +47,7 @@ body {
     linear-gradient(to right, #e4e4e7 1px, transparent 1px),
     linear-gradient(to bottom, #e4e4e7 1px, transparent 1px);
   background-size: 40px 40px;
+  background-attachment: fixed;
 }
 
 /* Modern utility classes */

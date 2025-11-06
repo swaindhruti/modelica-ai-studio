@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useScrollAnimation } from "../../hooks/useScrollAnimation";
 
 export function FeaturesSection() {
+  const { ref, isVisible } = useScrollAnimation(0.2);
+
   const features = [
     {
       title: "AI-Powered Generation",
@@ -25,24 +28,34 @@ export function FeaturesSection() {
   ];
 
   return (
-    <section id="features" className="max-w-7xl mx-auto px-6 py-20">
-      <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-medium text-black mb-4 tracking-tight">
+    <section
+      ref={ref}
+      id="features"
+      className={`max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"}`}
+    >
+      <div className="text-center mb-12 sm:mb-16">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-black mb-3 sm:mb-4 tracking-tight px-4">
           Powerful{" "}
           <span className="relative inline-block px-2">
             <span className="relative z-10 text-black">Features</span>
             <span className="absolute inset-0 bg-yellow-300"></span>
           </span>
         </h2>
-        <p className="text-lg text-zinc-700 max-w-2xl mx-auto">
+        <p className="text-base sm:text-lg text-zinc-700 max-w-2xl mx-auto px-4">
           Everything you need to create stunning AI fashion models for your
           brand
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {features.map((feature, index) => (
-          <FeatureCard key={index} feature={feature} />
+          <div
+            key={index}
+            className={`transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+            style={{ transitionDelay: `${index * 150}ms` }}
+          >
+            <FeatureCard feature={feature} />
+          </div>
         ))}
       </div>
     </section>
@@ -69,7 +82,7 @@ function FeatureCard({
 
   return (
     <div
-      className="relative bg-white border-2 border-black p-6 overflow-hidden group cursor-pointer"
+      className="relative bg-white border-2 border-black p-4 sm:p-6 overflow-hidden group cursor-pointer"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -86,10 +99,12 @@ function FeatureCard({
       )}
 
       <div className="relative z-10">
-        <h3 className="text-xl font-semibold text-black mb-2 tracking-tight">
+        <h3 className="text-lg sm:text-xl font-semibold text-black mb-2 tracking-tight">
           {feature.title}
         </h3>
-        <p className="text-zinc-700">{feature.description}</p>
+        <p className="text-sm sm:text-base text-zinc-700">
+          {feature.description}
+        </p>
       </div>
     </div>
   );
