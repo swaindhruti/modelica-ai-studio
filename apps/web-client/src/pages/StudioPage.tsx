@@ -3,6 +3,7 @@ import { ImageUpload } from "../components/ImageUpload";
 import { GenerationHistory } from "../components/GenerationHistory";
 import { GenerationModal } from "../components/GenerationModal";
 import { Navbar } from "../components/Navbar";
+import { FloatingThemeSwitcher } from "../components/FloatingThemeSwitcher";
 import toast from "react-hot-toast";
 import type { Generation } from "../types";
 // Using Cloudinary for direct client-side uploads
@@ -77,7 +78,7 @@ export function StudioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white grid-bg">
+    <div className="min-h-screen bg-white dark:bg-zinc-900 grid-bg transition-colors duration-300">
       <Navbar />
 
       {/* Server Connection Status */}
@@ -338,6 +339,9 @@ export function StudioPage() {
           setSelectedGeneration(null);
         }}
       />
+
+      {/* Floating Theme Switcher */}
+      <FloatingThemeSwitcher />
     </div>
   );
 }

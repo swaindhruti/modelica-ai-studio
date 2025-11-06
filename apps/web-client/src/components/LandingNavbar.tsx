@@ -61,10 +61,10 @@ export function LandingNavbar() {
       transition={{ duration: 0.35, ease: "easeInOut" }}
       className={`fixed top-0 left-0 right-0 z-50 pt-4 md:pt-8 px-4 md:px-8 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}
     >
-      <nav className="max-w-7xl mx-auto bg-white border-2 border-black px-4 md:px-8 py-4 md:py-6">
+      <nav className="max-w-7xl mx-auto bg-white dark:bg-zinc-900 border-2 border-black dark:border-zinc-600 px-4 md:px-8 py-4 md:py-6 transition-colors duration-300">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <span className="text-lg sm:text-xl md:text-2xl font-bold text-black tracking-tight">
+            <span className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white tracking-tight transition-colors duration-300">
               Modelica AI Studio
             </span>
           </div>
@@ -72,7 +72,7 @@ export function LandingNavbar() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-black hover:text-green-500 transition-colors"
+            className="md:hidden p-2 text-black dark:text-white hover:text-green-500 dark:hover:text-green-400 transition-colors"
             aria-label="Toggle menu"
           >
             <svg
@@ -103,25 +103,25 @@ export function LandingNavbar() {
           <div className="hidden md:flex items-center gap-8">
             <a
               href="#features"
-              className="text-base font-semibold text-black hover:text-green-500 transition-colors tracking-wide"
+              className="text-base font-semibold text-black dark:text-white hover:text-green-500 dark:hover:text-green-400 transition-colors tracking-wide"
             >
               Features
             </a>
             <a
               href="#pricing"
-              className="text-base font-semibold text-black hover:text-green-500 transition-colors tracking-wide"
+              className="text-base font-semibold text-black dark:text-white hover:text-green-500 dark:hover:text-green-400 transition-colors tracking-wide"
             >
               Pricing
             </a>
             <a
               href="#how-it-works"
-              className="text-base font-semibold text-black hover:text-green-500 transition-colors tracking-wide"
+              className="text-base font-semibold text-black dark:text-white hover:text-green-500 dark:hover:text-green-400 transition-colors tracking-wide"
             >
               How it Works
             </a>
             <a
               href="#contact"
-              className="text-base font-semibold text-black hover:text-green-500 transition-colors tracking-wide"
+              className="text-base font-semibold text-black dark:text-white hover:text-green-500 dark:hover:text-green-400 transition-colors tracking-wide"
             >
               Contact Us
             </a>
@@ -133,9 +133,9 @@ export function LandingNavbar() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 md:gap-3 px-3 md:px-6 py-2 md:py-3 text-xs md:text-sm font-semibold text-black bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
+                  className="flex items-center gap-2 md:gap-3 px-3 md:px-6 py-2 md:py-3 text-xs md:text-sm font-semibold text-black dark:text-white bg-white dark:bg-zinc-800 border-2 border-black dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(63,63,70,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(63,63,70,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
                 >
-                  <div className="w-6 h-6 md:w-8 md:h-8 bg-green-500 border-2 border-black flex items-center justify-center font-bold text-xs">
+                  <div className="w-6 h-6 md:w-8 md:h-8 bg-green-500 dark:bg-green-600 border-2 border-black dark:border-zinc-600 flex items-center justify-center font-bold text-xs">
                     {user.username.charAt(0).toUpperCase()}
                   </div>
                   <span className="hidden sm:inline">{user.username}</span>
@@ -160,20 +160,20 @@ export function LandingNavbar() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-56 bg-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+                    className="absolute right-0 mt-2 w-56 bg-white dark:bg-zinc-900 border-2 border-black dark:border-zinc-600 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(63,63,70,1)]"
                   >
-                    <div className="p-4 border-b-2 border-black">
-                      <p className="text-xs font-semibold text-zinc-600 uppercase tracking-wide">
+                    <div className="p-4 border-b-2 border-black dark:border-zinc-600">
+                      <p className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wide">
                         Signed in as
                       </p>
-                      <p className="text-sm font-bold text-black mt-1">
+                      <p className="text-sm font-bold text-black dark:text-white mt-1">
                         {user.email}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
-                        <span className="text-xs font-semibold text-zinc-600">
+                        <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">
                           Credits:
                         </span>
-                        <span className="text-sm font-bold text-green-500">
+                        <span className="text-sm font-bold text-green-500 dark:text-green-400">
                           {user.credits}
                         </span>
                       </div>
@@ -185,7 +185,7 @@ export function LandingNavbar() {
                           navigate("/studio");
                           setDropdownOpen(false);
                         }}
-                        className="w-full px-4 py-3 text-left text-sm font-semibold text-black hover:bg-green-500 transition-colors border-b-2 border-black"
+                        className="w-full px-4 py-3 text-left text-sm font-semibold text-black dark:text-white hover:bg-green-500 dark:hover:bg-green-600 transition-colors border-b-2 border-black dark:border-zinc-600"
                       >
                         <div className="flex items-center gap-3">
                           <svg
@@ -207,7 +207,7 @@ export function LandingNavbar() {
 
                       <button
                         onClick={handleLogout}
-                        className="w-full px-4 py-3 text-left text-sm font-semibold text-black hover:bg-red-500 hover:text-white transition-colors"
+                        className="w-full px-4 py-3 text-left text-sm font-semibold text-black dark:text-white hover:bg-red-500 hover:text-white transition-colors"
                       >
                         <div className="flex items-center gap-3">
                           <svg
@@ -234,13 +234,13 @@ export function LandingNavbar() {
               <>
                 <button
                   onClick={() => navigate("/login")}
-                  className="px-3 md:px-6 py-2 md:py-3 text-xs md:text-sm font-semibold text-black bg-white border-2 border-black hover:bg-zinc-50 transition-colors tracking-wide"
+                  className="px-3 md:px-6 py-2 md:py-3 text-xs md:text-sm font-semibold text-black dark:text-white bg-white dark:bg-zinc-800 border-2 border-black dark:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors tracking-wide"
                 >
                   Login
                 </button>
                 <button
                   onClick={() => navigate("/signup")}
-                  className="px-3 md:px-6 py-2 md:py-3 text-xs md:text-sm font-semibold text-black bg-green-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
+                  className="px-3 md:px-6 py-2 md:py-3 text-xs md:text-sm font-semibold text-black dark:text-white bg-green-500 dark:bg-green-600 border-2 border-black dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(63,63,70,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(63,63,70,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
                 >
                   Start Now
                 </button>
@@ -255,47 +255,48 @@ export function LandingNavbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden mt-4 pt-4 border-t-2 border-black"
+            className="md:hidden mt-4 pt-4 border-t-2 border-black dark:border-zinc-600"
           >
             <div className="flex flex-col space-y-3">
               <a
                 href="#features"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-base font-semibold text-black hover:text-green-500 transition-colors tracking-wide py-2"
+                className="text-base font-semibold text-black dark:text-white hover:text-green-500 dark:hover:text-green-400 transition-colors tracking-wide py-2"
               >
                 Features
               </a>
               <a
                 href="#pricing"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-base font-semibold text-black hover:text-green-500 transition-colors tracking-wide py-2"
+                className="text-base font-semibold text-black dark:text-white hover:text-green-500 dark:hover:text-green-400 transition-colors tracking-wide py-2"
               >
                 Pricing
               </a>
               <a
                 href="#how-it-works"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-base font-semibold text-black hover:text-green-500 transition-colors tracking-wide py-2"
+                className="text-base font-semibold text-black dark:text-white hover:text-green-500 dark:hover:text-green-400 transition-colors tracking-wide py-2"
               >
                 How it Works
               </a>
               <a
                 href="#contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-base font-semibold text-black hover:text-green-500 transition-colors tracking-wide py-2"
+                className="text-base font-semibold text-black dark:text-white hover:text-green-500 dark:hover:text-green-400 transition-colors tracking-wide py-2"
               >
                 Contact Us
               </a>
 
               {/* Mobile Auth Buttons */}
+              <div className="flex items-center justify-between pt-3 border-t-2 border-black dark:border-zinc-600"></div>
               {!isAuthenticated && (
-                <div className="flex flex-col gap-3 pt-3 border-t-2 border-black">
+                <div className="flex flex-col gap-3">
                   <button
                     onClick={() => {
                       navigate("/login");
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full px-4 py-3 text-sm font-semibold text-black bg-white border-2 border-black hover:bg-zinc-50 transition-colors tracking-wide"
+                    className="w-full px-4 py-3 text-sm font-semibold text-black dark:text-white bg-white dark:bg-zinc-800 border-2 border-black dark:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors tracking-wide"
                   >
                     Login
                   </button>
@@ -304,7 +305,7 @@ export function LandingNavbar() {
                       navigate("/signup");
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full px-4 py-3 text-sm font-semibold text-black bg-green-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
+                    className="w-full px-4 py-3 text-sm font-semibold text-black dark:text-white bg-green-500 dark:bg-green-600 border-2 border-black dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(63,63,70,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(63,63,70,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
                   >
                     Start Now
                   </button>

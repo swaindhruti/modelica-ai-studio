@@ -2,15 +2,15 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white border-t-2 border-black mt-20">
+    <footer className="bg-white dark:bg-zinc-900 border-t-2 border-black dark:border-zinc-600 mt-20 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div>
-            <h3 className="text-2xl font-bold text-black mb-4 tracking-tight">
+            <h3 className="text-2xl font-bold text-black dark:text-white mb-4 tracking-tight transition-colors duration-300">
               Modelica AI Studio
             </h3>
-            <p className="text-zinc-700 text-sm">
+            <p className="text-zinc-700 dark:text-zinc-300 text-sm transition-colors duration-300">
               Create stunning AI fashion models for your brand with professional
               quality in seconds.
             </p>
@@ -18,14 +18,14 @@ export function Footer() {
 
           {/* Product */}
           <div>
-            <h4 className="text-lg font-semibold text-black mb-4 tracking-tight">
+            <h4 className="text-lg font-semibold text-black dark:text-white mb-4 tracking-tight transition-colors duration-300">
               Product
             </h4>
             <ul className="space-y-2">
               <li>
                 <a
                   href="#features"
-                  className="text-zinc-700 hover:text-green-500 transition-colors text-sm"
+                  className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors text-sm"
                 >
                   Features
                 </a>
@@ -33,7 +33,7 @@ export function Footer() {
               <li>
                 <a
                   href="#pricing"
-                  className="text-zinc-700 hover:text-green-500 transition-colors text-sm"
+                  className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors text-sm"
                 >
                   Pricing
                 </a>
@@ -41,7 +41,7 @@ export function Footer() {
               <li>
                 <a
                   href="#how-it-works"
-                  className="text-zinc-700 hover:text-green-500 transition-colors text-sm"
+                  className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors text-sm"
                 >
                   How it Works
                 </a>
@@ -49,7 +49,7 @@ export function Footer() {
               <li>
                 <a
                   href="/studio"
-                  className="text-zinc-700 hover:text-green-500 transition-colors text-sm"
+                  className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors text-sm"
                 >
                   Studio
                 </a>
@@ -59,14 +59,14 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="text-lg font-semibold text-black mb-4 tracking-tight">
+            <h4 className="text-lg font-semibold text-black dark:text-white mb-4 tracking-tight transition-colors duration-300">
               Company
             </h4>
             <ul className="space-y-2">
               <li>
                 <a
                   href="#"
-                  className="text-zinc-700 hover:text-green-500 transition-colors text-sm"
+                  className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors text-sm"
                 >
                   About Us
                 </a>
@@ -74,7 +74,7 @@ export function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-zinc-700 hover:text-green-500 transition-colors text-sm"
+                  className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors text-sm"
                 >
                   Blog
                 </a>
@@ -82,7 +82,7 @@ export function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-zinc-700 hover:text-green-500 transition-colors text-sm"
+                  className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors text-sm"
                 >
                   Careers
                 </a>
@@ -90,7 +90,7 @@ export function Footer() {
               <li>
                 <a
                   href="#contact"
-                  className="text-zinc-700 hover:text-green-500 transition-colors text-sm"
+                  className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors text-sm"
                 >
                   Contact
                 </a>
@@ -100,14 +100,14 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h4 className="text-lg font-semibold text-black mb-4 tracking-tight">
+            <h4 className="text-lg font-semibold text-black dark:text-white mb-4 tracking-tight transition-colors duration-300">
               Legal
             </h4>
             <ul className="space-y-2">
               <li>
                 <a
                   href="#"
-                  className="text-zinc-700 hover:text-green-500 transition-colors text-sm"
+                  className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors text-sm"
                 >
                   Privacy Policy
                 </a>
@@ -115,7 +115,7 @@ export function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-zinc-700 hover:text-green-500 transition-colors text-sm"
+                  className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors text-sm"
                 >
                   Terms of Service
                 </a>
@@ -123,7 +123,7 @@ export function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-zinc-700 hover:text-green-500 transition-colors text-sm"
+                  className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors text-sm"
                 >
                   Cookie Policy
                 </a>
@@ -131,7 +131,7 @@ export function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-zinc-700 hover:text-green-500 transition-colors text-sm"
+                  className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors text-sm"
                 >
                   Licenses
                 </a>
@@ -141,14 +141,14 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-8 border-t-2 border-black flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-zinc-700">
+        <div className="pt-8 border-t-2 border-black dark:border-zinc-600 flex flex-col md:flex-row justify-between items-center gap-4 transition-colors duration-300">
+          <p className="text-sm text-zinc-700 dark:text-zinc-300 transition-colors duration-300">
             © {currentYear} Modelica AI Studio. All rights reserved.
           </p>
           <div className="flex gap-6">
             <a
               href="#"
-              className="text-zinc-700 hover:text-green-500 transition-colors"
+              className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors"
             >
               <svg
                 className="w-5 h-5"
@@ -161,7 +161,7 @@ export function Footer() {
             </a>
             <a
               href="#"
-              className="text-zinc-700 hover:text-green-500 transition-colors"
+              className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors"
             >
               <svg
                 className="w-5 h-5"
@@ -178,7 +178,7 @@ export function Footer() {
             </a>
             <a
               href="#"
-              className="text-zinc-700 hover:text-green-500 transition-colors"
+              className="text-zinc-700 dark:text-zinc-300 hover:text-green-500 dark:hover:text-green-400 transition-colors"
             >
               <svg
                 className="w-5 h-5"

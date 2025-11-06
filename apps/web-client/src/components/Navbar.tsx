@@ -32,14 +32,14 @@ export function Navbar() {
 
   return (
     <nav
-      className={`sticky top-0 z-50 bg-white border-b-2 border-black transition-all duration-700 ${scrolled ? "shadow-[0_4px_12px_rgba(0,0,0,0.1)]" : ""} ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}
+      className={`sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b-2 border-black dark:border-zinc-600 transition-all duration-700 ${scrolled ? "shadow-[0_4px_12px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.4)]" : ""} ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center gap-8">
             <button
               onClick={() => navigate("/")}
-              className="text-2xl font-bold text-black tracking-tight hover:text-green-500 transition-colors"
+              className="text-2xl font-bold text-black dark:text-white tracking-tight hover:text-green-500 dark:hover:text-green-400 transition-colors"
             >
               Modelica AI Studio
             </button>
@@ -48,15 +48,15 @@ export function Navbar() {
           <div className="flex items-center gap-6">
             {user && (
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border-2 border-black hover:bg-green-100 transition-colors">
-                  <div className="w-8 h-8 bg-green-500 border-2 border-black flex items-center justify-center font-bold text-sm text-black">
+                <div className="flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-900/30 border-2 border-black dark:border-zinc-600 hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors">
+                  <div className="w-8 h-8 bg-green-500 dark:bg-green-600 border-2 border-black dark:border-zinc-600 flex items-center justify-center font-bold text-sm text-black dark:text-white">
                     {user.username.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-black leading-tight">
+                    <span className="text-sm font-semibold text-black dark:text-white leading-tight">
                       {user.username}
                     </span>
-                    <span className="text-xs font-semibold text-green-600">
+                    <span className="text-xs font-semibold text-green-600 dark:text-green-400">
                       {user.credits} credits
                     </span>
                   </div>

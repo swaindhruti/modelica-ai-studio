@@ -36,14 +36,16 @@ export function HowItWorksSection() {
       className={`max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"}`}
     >
       <div className="text-center mb-12 sm:mb-16">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-black mb-3 sm:mb-4 tracking-tight px-4">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-black dark:text-white mb-3 sm:mb-4 tracking-tight px-4 transition-colors duration-300">
           How It{" "}
           <span className="relative inline-block px-2">
-            <span className="relative z-10 text-black">Works</span>
-            <span className="absolute inset-0 bg-yellow-300"></span>
+            <span className="relative z-10 text-black dark:text-white">
+              Works
+            </span>
+            <span className="absolute inset-0 bg-yellow-300 dark:bg-yellow-400"></span>
           </span>
         </h2>
-        <p className="text-base sm:text-lg text-zinc-700 max-w-2xl mx-auto px-4">
+        <p className="text-base sm:text-lg text-zinc-700 dark:text-zinc-300 max-w-2xl mx-auto px-4 transition-colors duration-300">
           Get started in four simple steps
         </p>
       </div>
@@ -55,14 +57,14 @@ export function HowItWorksSection() {
             className={`flex transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
             style={{ transitionDelay: `${index * 150}ms` }}
           >
-            <div className="bg-white border-2 border-black p-4 sm:p-6 flex-1 flex flex-col shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 cursor-pointer group">
-              <div className="text-5xl sm:text-6xl font-bold text-green-500 mb-3 sm:mb-4 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
+            <div className="bg-white dark:bg-zinc-800 border-2 border-black dark:border-zinc-600 p-4 sm:p-6 flex-1 flex flex-col shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(63,63,70,1)] transition-all duration-300 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(63,63,70,1)] hover:-translate-y-1 cursor-pointer group">
+              <div className="text-5xl sm:text-6xl font-bold text-green-500 dark:text-green-400 mb-3 sm:mb-4 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
                 {step.number}
               </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-black mb-2 sm:mb-3 tracking-tight">
+              <h3 className="text-lg sm:text-xl font-semibold text-black dark:text-white mb-2 sm:mb-3 tracking-tight transition-colors duration-300">
                 {step.title}
               </h3>
-              <p className="text-sm sm:text-base text-zinc-700 flex-grow">
+              <p className="text-sm sm:text-base text-zinc-700 dark:text-zinc-300 flex-grow transition-colors duration-300">
                 {step.description}
               </p>
             </div>

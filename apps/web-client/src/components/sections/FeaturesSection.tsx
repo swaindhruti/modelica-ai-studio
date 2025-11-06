@@ -34,14 +34,16 @@ export function FeaturesSection() {
       className={`max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"}`}
     >
       <div className="text-center mb-12 sm:mb-16">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-black mb-3 sm:mb-4 tracking-tight px-4">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-black dark:text-white mb-3 sm:mb-4 tracking-tight px-4 transition-colors duration-300">
           Powerful{" "}
           <span className="relative inline-block px-2">
-            <span className="relative z-10 text-black">Features</span>
-            <span className="absolute inset-0 bg-yellow-300"></span>
+            <span className="relative z-10 text-black dark:text-white">
+              Features
+            </span>
+            <span className="absolute inset-0 bg-yellow-300 dark:bg-yellow-400"></span>
           </span>
         </h2>
-        <p className="text-base sm:text-lg text-zinc-700 max-w-2xl mx-auto px-4">
+        <p className="text-base sm:text-lg text-zinc-700 dark:text-zinc-300 max-w-2xl mx-auto px-4 transition-colors duration-300">
           Everything you need to create stunning AI fashion models for your
           brand
         </p>
@@ -82,7 +84,7 @@ function FeatureCard({
 
   return (
     <div
-      className="relative bg-white border-2 border-black p-4 sm:p-6 overflow-hidden group cursor-pointer"
+      className="relative bg-white dark:bg-zinc-800 border-2 border-black dark:border-zinc-600 p-4 sm:p-6 overflow-hidden group cursor-pointer transition-colors duration-300"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -99,10 +101,10 @@ function FeatureCard({
       )}
 
       <div className="relative z-10">
-        <h3 className="text-lg sm:text-xl font-semibold text-black mb-2 tracking-tight">
+        <h3 className="text-lg sm:text-xl font-semibold text-black dark:text-white mb-2 tracking-tight transition-colors duration-300">
           {feature.title}
         </h3>
-        <p className="text-sm sm:text-base text-zinc-700">
+        <p className="text-sm sm:text-base text-zinc-700 dark:text-zinc-300 transition-colors duration-300">
           {feature.description}
         </p>
       </div>

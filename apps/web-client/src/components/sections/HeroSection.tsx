@@ -323,27 +323,29 @@ export function HeroSection() {
           <div
             className={`text-center lg:text-left order-2 lg:order-1 transition-all duration-1000 delay-200 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"}`}
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium text-black mb-4 sm:mb-5 md:mb-6 leading-tight tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium text-black dark:text-white mb-4 sm:mb-5 md:mb-6 leading-tight tracking-tight transition-colors duration-300">
               Create Stunning{" "}
               <span className="relative inline-block px-1 sm:px-2">
-                <span className="relative z-10 text-black">Fashion Models</span>
-                <span className="absolute inset-0 bg-yellow-300"></span>
+                <span className="relative z-10 text-black dark:text-white">
+                  Fashion Models
+                </span>
+                <span className="absolute inset-0 bg-yellow-300 dark:bg-yellow-400"></span>
               </span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-zinc-700 mb-6 sm:mb-8 md:mb-10 px-2 sm:px-0">
+            <p className="text-base sm:text-lg md:text-xl text-zinc-700 dark:text-zinc-300 mb-6 sm:mb-8 md:mb-10 px-2 sm:px-0 transition-colors duration-300">
               Transform your ideas into stunning visuals with AI-powered model
               generation. Professional quality in seconds, not hours.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start px-4 sm:px-0">
               <button
                 onClick={() => navigate("/signup")}
-                className="w-full sm:w-auto px-6 sm:px-8 py-3 font-semibold text-sm sm:text-base text-black bg-green-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 font-semibold text-sm sm:text-base text-black dark:text-white bg-green-500 dark:bg-green-600 border-2 border-black dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(63,63,70,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(63,63,70,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
               >
                 Get Started
               </button>
               <button
                 onClick={() => navigate("/login")}
-                className="w-full sm:w-auto px-6 sm:px-8 py-3 font-semibold text-sm sm:text-base text-black bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 font-semibold text-sm sm:text-base text-black dark:text-white bg-white dark:bg-zinc-800 border-2 border-black dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(63,63,70,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(63,63,70,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 tracking-wide"
               >
                 Watch Demo
               </button>
