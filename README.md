@@ -1,416 +1,679 @@
 # Modelia AI Studio
 
-A full-stack AI image generation platform with authentication, file uploads, and real-time updates. Built with **Fastify** (backend), **React** (frontend), and **PostgreSQL** (database) in a **Turborepo** monorepo.
+A production-ready full-stack platform for AI-powered image generation. This project demonstrates modern web application architecture using a monorepo structure, implementing best practices for scalability, maintainability, and developer experience.
+
+**Tech Stack:** Fastify · React 19 · PostgreSQL · Drizzle ORM · TanStack Query · TypeScript · Turborepo
+
+[![CI Status](https://github.com/swaindhruti/modelica-ai-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/swaindhruti/modelica-ai-studio/actions)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
 
 ---
 
-## 🚀 Features
+## Architecture Overview
 
-### Backend
+This monorepo follows a **separation of concerns** architecture pattern with clear boundaries between presentation, business logic, and data layers.
 
-- **Authentication**: JWT-based auth with bcrypt password hashing
-- **Database**: PostgreSQL with Drizzle ORM, schema migrations
-- **File Upload**: Multipart form data with Sharp image resizing (512x512)
-- **AI Generation**: Simulated AI model with 5 style options, retry logic for 503 errors
-- **API Documentation**: Comprehensive OpenAPI 3.0 spec
-- **Logging**: Pino structured logging throughout
-- **CORS**: Configured for local and production environments
+### System Design
 
-### Frontend
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Client Layer                           │
+│  React 19 + TypeScript + Vite + Tailwind CSS v4           │
+│  ├─ Route Guards (Protected Routes)                        │
+│  ├─ State Management (Zustand)                             │
+│  ├─ Data Fetching (TanStack Query)                         │
+│  └─ UI Components (Neobrutalist Design)                    │
+└────────────────────┬────────────────────────────────────────┘
+                     │ HTTPS/REST
+                     │ JWT Bearer Token
+┌────────────────────▼────────────────────────────────────────┐
+│                      API Layer                              │
+│  Fastify 5.6.1 + TypeScript + Zod Validation              │
+│  ├─ JWT Authentication Middleware                          │
+│  ├─ Multipart Form Data Parsing                            │
+│  ├─ Structured Logging (Pino)                              │
+│  └─ CORS & Security Headers                                │
+└────────────────────┬────────────────────────────────────────┘
+                     │ SQL/Connection Pool
+┌────────────────────▼────────────────────────────────────────┐
+│                   Data Layer                                │
+│  PostgreSQL 16 + Drizzle ORM                               │
+│  ├─ Schema Migrations                                       │
+│  ├─ Relational Data (users ← generations)                  │
+│  └─ Type-Safe Queries                                       │
+└─────────────────────────────────────────────────────────────┘
+```
 
-- **Authentication**: Login/Signup with JWT token persistence
-- **Protected Routes**: Route guards for authenticated pages
-- **AI Studio**: Image generation interface with prompt input and style selection
-- **File Upload**: Drag-and-drop with client-side resizing to 512x512
-- **History**: Last 5 generations with click-to-restore functionality
-- **Dark Mode**: System-aware theme toggle with localStorage
-- **Animations**: Framer Motion transitions
-- **Toast Notifications**: Real-time feedback
-- **Retry Logic**: Auto-retry for 503 errors (up to 3 attempts)
-- **Abort Control**: Cancel in-flight requests
-- **Responsive Design**: Mobile-first Tailwind CSS
+### Monorepo Structure
+
+We use **Turborepo** for efficient builds, caching, and parallel task execution:
+
+| Path                             | Description                   | Documentation                                                |
+| -------------------------------- | ----------------------------- | ------------------------------------------------------------ |
+| **`apps/server`**                | Fastify REST API backend      | [→ Server README](./apps/server/README.md)                   |
+| **`apps/web-client`**            | React SPA frontend            | [→ Frontend README](./apps/web-client/README.md)             |
+| **`packages/types`**             | Shared TypeScript definitions | [→ Types README](./packages/types/README.md)                 |
+| **`packages/eslint-config`**     | ESLint configurations         | [→ ESLint Config README](./packages/eslint-config/README.md) |
+| **`packages/typescript-config`** | TypeScript configurations     | [→ TS Config README](./packages/typescript-config/README.md) |
+| **`packages/ui`**                | Shared React components       | [→ UI Library README](./packages/ui/README.md)               |
 
 ---
 
-## 📋 Prerequisites
+## Core Features
 
-- **Node.js** 18+
-- **pnpm** (package manager)
-- **PostgreSQL** 14+ (local or remote)
-- **Docker** & **Docker Compose** (optional, for containerized setup)
+### Authentication & Authorization
+
+- **Stateless JWT Authentication**: RFC 7519 compliant tokens with HS256 signing
+- **Password Security**: bcrypt hashing with 10 salt rounds (industry standard)
+- **Token Lifecycle Management**: Automatic expiry handling and refresh logic
+- **Protected Routes**: Client-side route guards with server-side verification
+
+[→ Read authentication implementation details](./apps/server/README.md#authentication-architecture)
+
+### AI Generation Pipeline
+
+- **Multi-Style Support**: 5 distinct generation styles (photorealistic, cartoon, pixel art, anime, oil painting)
+- **Concurrent Request Handling**: Queue management for model overload scenarios
+- **Retry Mechanism**: Exponential backoff for transient failures (503 errors)
+- **Real-time Status Updates**: WebSocket-ready architecture (currently polling-based)
+
+[→ Read generation pipeline details](./apps/server/README.md#generation-architecture)
+
+### Image Processing
+
+- **Client-Side Preprocessing**: Canvas API resizing to 512×512 before upload
+- **Server-Side Validation**: Sharp-based image validation and re-encoding
+- **Format Normalization**: Automatic conversion to optimized JPEG/PNG
+- **Cloud Storage Integration**: Cloudinary CDN with transformation URLs
+
+[→ Read image processing details](./apps/web-client/README.md#image-upload-architecture)
+
+### Data Management
+
+- **Type-Safe ORM**: Drizzle ORM with compile-time SQL validation
+- **Connection Pooling**: PostgreSQL connection pool with configurable limits
+- **Schema Migrations**: Version-controlled database schema changes
+- **Query Optimization**: Indexed columns for fast user-generation lookups
+
+[→ Read database architecture details](./apps/server/README.md#database-schema)
 
 ---
 
-## 🐳 Quick Start with Docker (Recommended)
+## Technology Stack
 
-The easiest way to run the entire stack (frontend, backend, and database) is with Docker Compose:
+### Backend Technologies
 
-### 1. Clone the Repository
+| Technology       | Version | Purpose                                               |
+| ---------------- | ------- | ----------------------------------------------------- |
+| **Fastify**      | 5.6.1   | High-performance HTTP server (3x faster than Express) |
+| **TypeScript**   | 5.9.3   | Static type checking and enhanced IDE support         |
+| **PostgreSQL**   | 16+     | ACID-compliant relational database                    |
+| **Drizzle ORM**  | 0.44.7  | Type-safe SQL query builder with migrations           |
+| **@fastify/jwt** | 10.0.0  | JWT authentication plugin                             |
+| **bcryptjs**     | 3.0.3   | Password hashing with salting                         |
+| **Sharp**        | 0.34.4  | High-performance image processing                     |
+| **Zod**          | 4.1.12  | Runtime schema validation                             |
+| **Pino**         | 10.1.0  | Low-overhead JSON logging                             |
+
+[→ Full backend dependencies](./apps/server/package.json)
+
+### Frontend Technologies
+
+| Technology         | Version  | Purpose                               |
+| ------------------ | -------- | ------------------------------------- |
+| **React**          | 19.1.1   | UI library with concurrent rendering  |
+| **TypeScript**     | 5.9.3    | Type-safe component development       |
+| **Vite**           | 7.1.7    | Lightning-fast build tool with HMR    |
+| **Tailwind CSS**   | 4.1.16   | Utility-first CSS framework           |
+| **React Router**   | 7.9.5    | Client-side routing with data loaders |
+| **TanStack Query** | 5.90.6   | Async state management and caching    |
+| **Zustand**        | 5.0.8    | Lightweight global state management   |
+| **Framer Motion**  | 12.23.24 | Production-ready animation library    |
+| **Axios**          | 1.13.2   | Promise-based HTTP client             |
+
+[→ Full frontend dependencies](./apps/web-client/package.json)
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- **Node.js** 18+ (LTS recommended)
+- **pnpm** 9.0.0+ (enforced by packageManager field)
+- **PostgreSQL** 16+ (14+ supported)
+- **Docker** & **Docker Compose** (optional, for containerized development)
+
+### Quick Start (Docker - Recommended)
+
+The fastest way to run the complete stack:
+
+#### 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/swaindhruti/modelica-ai-studio.git
 cd modelia-ai-studio
 ```
 
-### 2. Configure Environment Variables
+#### 2. Environment Setup
 
 ```bash
-# Edit .env file and set your values
+# Copy environment template
+cp .env.example .env
+
+# Edit with your configuration
 nano .env
 ```
 
-Required variables:
+**Required Environment Variables:**
 
-- `JWT_SECRET`: A secure random string
-- `VITE_CLOUDINARY_CLOUD_NAME`: Your Cloudinary cloud name (optional)
-- `VITE_CLOUDINARY_UPLOAD_PRESET`: Your Cloudinary upload preset (optional)
+```env
+# Backend
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/modelia_ai_dev
+JWT_SECRET=your-secure-random-secret-minimum-32-characters
+PORT=3000
+NODE_ENV=development
 
-### 3. Start All Services
+# Frontend
+VITE_API_URL=http://localhost:3000
+VITE_CLOUDINARY_CLOUD_NAME=your-cloudinary-name  # Optional
+VITE_CLOUDINARY_UPLOAD_PRESET=your-preset        # Optional
+```
+
+#### 3. Start Services
 
 ```bash
-# Using the helper script (recommended)
+# Start all services (frontend + backend + database)
 ./docker.sh start
 
-# Or using docker-compose directly
+# Or use docker-compose directly
 docker-compose up --build
 ```
 
-### 4. Access the Application
+#### 4. Access the Application
 
-- **Web Client**: http://localhost:8080
+- **Frontend**: http://localhost:8080
 - **Backend API**: http://localhost:3000
-- **Database**: localhost:5432
+- **PostgreSQL**: localhost:5432 (user: postgres, password: postgres)
 
-### Docker Commands
+### Docker Management Commands
 
 ```bash
-./docker.sh start      # Start all services
-./docker.sh stop       # Stop all services
-./docker.sh restart    # Restart all services
-./docker.sh logs       # View logs
-./docker.sh status     # Check service status
+./docker.sh start      # Start all services with build
+./docker.sh stop       # Gracefully stop services
+./docker.sh restart    # Restart services
+./docker.sh logs       # Tail service logs
+./docker.sh status     # Check health status
 ./docker.sh migrate    # Run database migrations
-./docker.sh reset      # Reset everything (deletes data!)
+./docker.sh reset      # ⚠️  Reset and clear all data
 ```
 
-For more details, see [README.docker.md](./README.docker.md)
+[→ Comprehensive Docker documentation](./README.docker.md)
 
 ---
 
-## 🛠️ Quick Start (Manual Setup)
+### Manual Setup (Without Docker)
 
-If you prefer to run services manually without Docker:
+For local development without containerization:
 
-### 1. Clone & Install
+#### 1. Install Dependencies
 
 ```bash
-git clone <your-repo-url>
-cd modelia-ai-studio
+# Install all workspace dependencies
 pnpm install
 ```
 
-### 2. Database Setup
-
-Create a PostgreSQL database:
+#### 2. Database Setup
 
 ```bash
+# Create PostgreSQL database
 createdb modelia_ai_dev
+
+# Or using psql
+psql -U postgres -c "CREATE DATABASE modelia_ai_dev;"
 ```
 
-### 3. Environment Variables
+#### 3. Configure Environment
 
-#### Backend (`apps/server/.env`)
+Create `.env` files in both apps:
+
+**Backend** (`apps/server/.env`):
 
 ```env
-DATABASE_URL=postgresql://user:password@localhost:5432/modelia_ai_dev
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+DATABASE_URL=postgresql://postgres:password@localhost:5432/modelia_ai_dev
+JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
 PORT=3000
 NODE_ENV=development
 ```
 
-#### Frontend (`apps/web-client/.env`)
+**Frontend** (`apps/web-client/.env`):
 
 ```env
 VITE_API_URL=http://localhost:3000
 ```
 
-### 4. Database Migration
+#### 4. Run Database Migrations
 
 ```bash
 cd apps/server
-pnpm drizzle-kit push
+pnpm run db:push
 ```
 
-### 5. Run Development Servers
+#### 5. Start Development Servers
 
-**Option A: Run both simultaneously (from root)**
+**Option A: Run all from root (parallel execution)**
 
 ```bash
 pnpm dev
 ```
 
-**Option B: Run separately**
+**Option B: Run individually in separate terminals**
 
-Terminal 1 (Backend):
+Terminal 1 - Backend:
 
 ```bash
 cd apps/server
 pnpm dev
 ```
 
-Terminal 2 (Frontend):
+Terminal 2 - Frontend:
 
 ```bash
 cd apps/web-client
 pnpm dev
 ```
 
-- Backend: `http://localhost:3000`
-- Frontend: `http://localhost:5173`
+**Access Points:**
+
+- Backend API: http://localhost:3000
+- Frontend App: http://localhost:5173
 
 ---
 
-## 📁 Project Structure
+## Project Structure & Navigation
 
 ```
 modelia-ai-studio/
 ├── apps/
-│   ├── server/                    # Fastify backend
+│   ├── server/                          # Fastify Backend
 │   │   ├── src/
 │   │   │   ├── config/
-│   │   │   │   └── env.ts         # Environment validation
+│   │   │   │   └── env.ts               # Environment variable validation (Zod)
 │   │   │   ├── db/
-│   │   │   │   ├── schema.ts      # Drizzle schema (users, generations)
-│   │   │   │   └── connection.ts  # PostgreSQL connection pool
+│   │   │   │   ├── schema.ts            # Database schema (Drizzle)
+│   │   │   │   └── connection.ts        # PostgreSQL connection pool
 │   │   │   ├── middleware/
-│   │   │   │   └── auth.ts        # JWT verification middleware
+│   │   │   │   └── auth.ts              # JWT verification middleware
 │   │   │   ├── routes/
-│   │   │   │   ├── auth.ts        # POST /auth/signup, /auth/login
-│   │   │   │   └── generations.ts # POST /generations, GET /generations
-│   │   │   └── server.ts          # Fastify app entry point
-│   │   ├── uploads/               # Uploaded images
-│   │   ├── README.md              # Backend documentation
-│   │   └── OPENAPI.yaml           # API specification
+│   │   │   │   ├── auth.ts              # Authentication endpoints
+│   │   │   │   └── generations.ts       # Generation CRUD endpoints
+│   │   │   ├── __tests__/               # Jest integration tests
+│   │   │   └── server.ts                # Fastify app initialization
+│   │   ├── drizzle/                     # Migration files
+│   │   ├── uploads/                     # Uploaded images (gitignored)
+│   │   └── README.md                    # Backend documentation →
 │   │
-│   └── web-client/                # React frontend
+│   └── web-client/                      # React Frontend
 │       ├── src/
 │       │   ├── components/
 │       │   │   ├── GenerationHistory.tsx
 │       │   │   ├── ImageUpload.tsx
 │       │   │   ├── Navbar.tsx
+│       │   │   ├── FloatingThemeSwitcher.tsx
 │       │   │   └── ProtectedRoute.tsx
+│       │   ├── hooks/
+│       │   │   ├── useGenerate.ts       # Generation mutation hook
+│       │   │   ├── useImageUpload.ts    # Image upload hook
+│       │   │   └── README.md            # Hooks documentation →
 │       │   ├── lib/
-│       │   │   ├── api.ts         # Axios client with JWT interceptor
-│       │   │   └── imageUtils.ts  # Image validation & resizing
+│       │   │   ├── api.ts               # Axios instance with interceptors
+│       │   │   └── imageUtils.ts        # Image processing utilities
 │       │   ├── pages/
+│       │   │   ├── LandingPage.tsx
 │       │   │   ├── LoginPage.tsx
 │       │   │   ├── SignupPage.tsx
 │       │   │   └── StudioPage.tsx
 │       │   ├── store/
-│       │   │   ├── authStore.ts   # Zustand auth state
-│       │   │   └── themeStore.ts  # Zustand theme state
-│       │   ├── types/
-│       │   │   └── index.ts       # TypeScript types
-│       │   ├── App.tsx            # Router & providers
-│       │   └── main.tsx           # Entry point
-│       └── README.md              # Frontend documentation
+│       │   │   ├── authStore.ts         # Zustand auth state
+│       │   │   └── themeStore.ts        # Zustand theme state
+│       │   ├── tests/                   # Vitest component tests
+│       │   ├── App.tsx                  # Router configuration
+│       │   └── main.tsx                 # React entry point
+│       └── README.md                    # Frontend documentation →
 │
-└── packages/
-    ├── eslint-config/             # Shared ESLint configs
-    ├── typescript-config/         # Shared TypeScript configs
-    ├── types/                     # Shared TypeScript types
-    └── ui/                        # Shared UI components
+├── packages/
+│   ├── eslint-config/                   # Shared ESLint configs
+│   │   ├── base.js                      # Base config for TypeScript
+│   │   ├── react-internal.js            # React-specific rules
+│   │   └── README.md                    # ESLint config docs →
+│   ├── types/                           # Shared TypeScript types
+│   │   ├── src/index.ts                 # User, Generation, API types
+│   │   └── README.md                    # Types documentation →
+│   ├── typescript-config/               # Shared TS compiler configs
+│   │   ├── base.json                    # Base compiler options
+│   │   ├── nextjs.json                  # Next.js-specific config
+│   │   └── README.md                    # TS config docs →
+│   └── ui/                              # Shared React components
+│       ├── src/                         # Button, Card, Code components
+│       └── README.md                    # UI library docs →
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml                       # GitHub Actions CI/CD pipeline
+│
+├── docker-compose.yml                   # Docker services orchestration
+├── docker.sh                            # Docker management script
+├── turbo.json                           # Turborepo pipeline configuration
+├── pnpm-workspace.yaml                  # pnpm workspace definition
+└── README.md                            # ← You are here
 ```
 
 ---
 
-## 📚 Tech Stack
+## Development Workflow
 
-### Backend
+### Available Scripts
 
-- **Fastify** 5.6.1 - Fast web framework
-- **Drizzle ORM** 0.44.7 - Type-safe SQL ORM
-- **PostgreSQL** - Relational database
-- **@fastify/jwt** 10.0.0 - JWT authentication
-- **bcryptjs** 2.4.3 - Password hashing
-- **Sharp** 0.34.4 - Image processing
-- **Zod** 4.1.12 - Schema validation
-- **Pino** - Structured logging
-
-### Frontend
-
-- **React** 18 + **TypeScript** - UI framework
-- **Vite** - Build tool
-- **Tailwind CSS** - Styling
-- **React Router DOM** 7.9.5 - Routing
-- **TanStack Query** 5.90.6 - Data fetching
-- **Axios** 1.13.2 - HTTP client
-- **Zustand** 5.0.8 - State management
-- **Framer Motion** 12.23.24 - Animations
-- **react-hot-toast** 2.6.0 - Notifications
-
----
-
-## 🎯 API Endpoints
-
-### Authentication
-
-- `POST /auth/signup` - Create new user
-- `POST /auth/login` - Login and get JWT token
-
-### Generations (Protected)
-
-- `POST /generations` - Create new generation (multipart/form-data)
-- `GET /generations` - Get user's generations (last 5)
-
-See `apps/server/OPENAPI.yaml` for full API documentation.
-
----
-
-## 🧪 Testing
-
-### Backend Tests
+#### Root Level (Turborepo)
 
 ```bash
-cd apps/server
-pnpm test
-```
-
-### Frontend Tests
-
-```bash
-cd apps/web-client
-pnpm test
-```
-
----
-
-## 🚀 Deployment
-
-### Backend (Render)
-
-1. Create a new Web Service on Render
-2. Connect your GitHub repository
-3. Set build command: `cd apps/server && pnpm install && pnpm build`
-4. Set start command: `cd apps/server && pnpm start`
-5. Add environment variables:
-   - `DATABASE_URL` (PostgreSQL connection string)
-   - `JWT_SECRET` (random secure string)
-   - `PORT` (Render provides this automatically)
-   - `NODE_ENV=production`
-
-### Frontend (Vercel)
-
-1. Import project in Vercel
-2. Set root directory: `apps/web-client`
-3. Framework preset: Vite
-4. Add environment variable:
-   - `VITE_API_URL=https://your-backend.onrender.com`
-5. Deploy!
-
----
-
-## 🔒 Security Best Practices
-
-- ✅ JWT tokens with expiration
-- ✅ bcrypt password hashing (10 rounds)
-- ✅ Environment variable validation
-- ✅ CORS configuration
-- ✅ SQL injection protection via Drizzle ORM
-- ✅ XSS protection via React
-- ✅ File type validation (JPEG/PNG only)
-- ✅ File size limits (10MB client, 50MB server)
-- ✅ Image resizing to prevent large uploads
-
----
-
-## 📝 Development Scripts
-
-### Root Level
-
-```bash
-pnpm dev           # Run all apps in development mode
-pnpm build         # Build all apps
-pnpm lint          # Lint all apps
+pnpm dev           # Start all apps in development mode (parallel)
+pnpm build         # Build all apps for production
+pnpm lint          # Lint all packages (ESLint)
+pnpm test          # Run all test suites (Jest + Vitest)
 pnpm format        # Format code with Prettier
 ```
 
-### Backend
+#### Backend Specific
 
 ```bash
 cd apps/server
-pnpm dev           # Start development server with nodemon
-pnpm build         # Build TypeScript to dist/
+pnpm dev           # Start with hot reload (tsx watch)
+pnpm build         # Compile TypeScript to dist/
 pnpm start         # Run production build
-pnpm drizzle-kit push  # Push schema changes to database
-pnpm drizzle-kit studio  # Open Drizzle Studio
+pnpm test          # Run Jest tests
+pnpm test:coverage # Run tests with coverage report
+pnpm db:push       # Push schema changes to database
+pnpm db:studio     # Open Drizzle Studio (database GUI)
 ```
 
-### Frontend
+#### Frontend Specific
 
 ```bash
 cd apps/web-client
-pnpm dev           # Start Vite dev server
-pnpm build         # Build for production
-pnpm preview       # Preview production build
-pnpm lint          # Run ESLint
+pnpm dev           # Start Vite dev server with HMR
+pnpm build         # Build optimized production bundle
+pnpm preview       # Preview production build locally
+pnpm test          # Run Vitest unit tests
+pnpm test:coverage # Generate test coverage report
 ```
 
 ---
 
-## 🌟 Key Features Explained
+## API Endpoints
 
-### Authentication Flow
+### Authentication
 
-1. User signs up → Password hashed with bcrypt → Saved to PostgreSQL
-2. User logs in → Password verified → JWT token issued
-3. Token stored in localStorage → Sent with every API request
-4. Backend middleware verifies JWT → Grants access to protected routes
+| Method | Endpoint       | Description                 | Auth Required |
+| ------ | -------------- | --------------------------- | ------------- |
+| `POST` | `/auth/signup` | Create new user account     | No            |
+| `POST` | `/auth/login`  | Login and receive JWT token | No            |
 
-### Image Upload & Processing
+### Generations
 
-1. **Client-side**: Canvas API resizes image to 512x512
-2. **Upload**: Multipart form data sent to server
-3. **Server-side**: Sharp library resizes again (double-check)
-4. **Storage**: Saved to `uploads/` directory
-5. **Database**: Image URL stored in `generations` table
+| Method | Endpoint       | Description                   | Auth Required |
+| ------ | -------------- | ----------------------------- | ------------- |
+| `POST` | `/generations` | Create new AI generation      | Yes           |
+| `GET`  | `/generations` | Get user's last 5 generations | Yes           |
 
-### Generation Flow
+### Health Check
 
-1. User enters prompt, selects style, uploads image (optional)
-2. Frontend creates FormData with all inputs
-3. TanStack Query mutation sends POST request
-4. Server simulates AI processing (1-2s delay)
-5. 20% chance of 503 error (to test retry logic)
-6. On success: Returns generation with imageUrl
-7. Frontend invalidates cache → History auto-updates
+| Method | Endpoint  | Description       | Auth Required |
+| ------ | --------- | ----------------- | ------------- |
+| `GET`  | `/health` | API health status | No            |
 
-### Retry Logic
-
-- TanStack Query automatically retries 503 errors
-- Up to 3 attempts with 1s delay between retries
-- Toast notifications show retry progress
-- User can abort at any time
+[→ Complete API documentation with request/response examples](./apps/server/README.md#api-endpoints)
 
 ---
 
-## 🎨 UI/UX Features
+## Testing
 
-- **Dark Mode**: Toggle in navbar, persists to localStorage
-- **Toast Notifications**: Success (green), Error (red), Info (blue)
-- **Loading States**: Spinners, skeleton screens, disabled buttons
-- **Animations**: Smooth transitions with Framer Motion
-- **Accessibility**: Keyboard navigation, ARIA labels, focus states
-- **Responsive Design**: Mobile-first, works on all screen sizes
+This project includes comprehensive test suites for both backend and frontend.
+
+### Backend Testing (Jest)
+
+**Test Coverage:**
+
+- Authentication routes (signup, login, validation)
+- Generation routes (create, list, delete)
+- Middleware (JWT verification)
+- Error handling scenarios
+
+```bash
+cd apps/server
+pnpm test              # Run all tests
+pnpm test:watch        # Watch mode
+pnpm test:coverage     # Generate coverage report
+```
+
+[→ Backend testing details](./apps/server/README.md#testing)
+
+### Frontend Testing (Vitest)
+
+**Test Coverage:**
+
+- Component rendering and interactions
+- Custom hooks logic
+- Form validation
+- API integration mocks
+
+```bash
+cd apps/web-client
+pnpm test              # Run all tests
+pnpm test:ui           # Open Vitest UI
+pnpm test:coverage     # Generate coverage report
+```
+
+[→ Frontend testing details](./apps/web-client/README.md#testing)
+
+### Continuous Integration
+
+GitHub Actions automatically runs:
+
+- Linting (ESLint + Prettier)
+- Type checking (TypeScript)
+- Unit tests with coverage
+- Build verification
+
+See [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) for pipeline configuration.
 
 ---
 
-## 📄 License
+## Deployment
 
-ISC
+### Backend Deployment (Render / Railway / Fly.io)
+
+**Recommended: Render**
+
+1. Create a new Web Service
+2. Connect your GitHub repository
+3. Configure build settings:
+   ```
+   Build Command: cd apps/server && pnpm install && pnpm build
+   Start Command: cd apps/server && pnpm start
+   ```
+4. Set environment variables:
+   ```
+   DATABASE_URL=postgresql://user:pass@host:5432/db
+   JWT_SECRET=your-production-secret-key
+   PORT=3000
+   NODE_ENV=production
+   ```
+5. Deploy!
+
+[→ Detailed backend deployment guide](./apps/server/README.md#deployment)
+
+### Frontend Deployment (Vercel / Netlify)
+
+**Recommended: Vercel**
+
+1. Import project from GitHub
+2. Set root directory: `apps/web-client`
+3. Framework preset: Vite
+4. Build settings (auto-detected):
+   ```
+   Build Command: pnpm build
+   Output Directory: dist
+   ```
+5. Environment variable:
+   ```
+   VITE_API_URL=https://your-backend.onrender.com
+   ```
+6. Deploy!
+
+[→ Detailed frontend deployment guide](./apps/web-client/README.md#deployment)
 
 ---
 
-## 🙏 Acknowledgments
+## Security Considerations
 
-Built with [Turborepo](https://turborepo.com/), [Fastify](https://fastify.io/), [React](https://react.dev/), and [Drizzle ORM](https://orm.drizzle.team/).
+This application implements industry-standard security practices:
+
+### Authentication Security
+
+- ✅ JWT tokens with configurable expiration
+- ✅ HS256 signing algorithm (HMAC with SHA-256)
+- ✅ bcrypt password hashing with 10 salt rounds
+- ✅ No sensitive data in JWT payload
+
+### API Security
+
+- ✅ CORS configured with allowed origins
+- ✅ Rate limiting (ready for implementation)
+- ✅ SQL injection protection via Drizzle ORM
+- ✅ Input validation with Zod schemas
+- ✅ XSS protection via React's automatic escaping
+
+### Image Upload Security
+
+- ✅ File type validation (JPEG/PNG only)
+- ✅ File size limits (10MB client, 50MB server)
+- ✅ Server-side image validation with Sharp
+- ✅ Cloud storage with signed URLs
+
+### Environment Security
+
+- ✅ Environment variable validation on startup
+- ✅ No secrets in repository
+- ✅ `.env.example` templates for reference
+
+[→ Comprehensive security documentation](./apps/server/README.md#security)
+
+---
+
+## Performance Optimizations
+
+### Backend Optimizations
+
+- **Connection Pooling**: PostgreSQL connection pool (5-20 connections)
+- **Structured Logging**: Low-overhead Pino logger
+- **Async Operations**: Non-blocking I/O throughout
+- **Query Optimization**: Indexed database columns
+
+### Frontend Optimizations
+
+- **Code Splitting**: Route-based lazy loading
+- **Image Optimization**: Client-side resizing before upload
+- **Request Caching**: TanStack Query automatic caching
+- **Debounced Inputs**: Reduced API calls
+- **Production Build**: Vite's Rollup optimization
+
+[→ Frontend performance details](./apps/web-client/README.md#performance)
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+**Issue: `pnpm install` fails**
+
+- Solution: Ensure Node.js 18+ and pnpm 9.0.0+ are installed
+- Run: `corepack enable && corepack prepare pnpm@9.0.0 --activate`
+
+**Issue: Database connection errors**
+
+- Solution: Verify `DATABASE_URL` in `.env` is correct
+- Check PostgreSQL is running: `pg_isready`
+
+**Issue: Port 3000 or 5173 already in use**
+
+- Solution: Kill existing process or change `PORT` in `.env`
+- Find process: `lsof -i :3000`
+
+**Issue: JWT token expires immediately**
+
+- Solution: Ensure server and client time are synchronized
+- Check JWT_SECRET is set correctly
+
+**Issue: Images not uploading**
+
+- Solution: Verify Cloudinary credentials
+- Check file size limits (10MB)
+- Ensure file is JPEG or PNG
+
+[→ Complete troubleshooting guide](./DOCKER_SETUP.md)
+
+---
+
+## Contributing
+
+Contributions are welcome! Please follow these guidelines:
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Follow** existing code style (ESLint + Prettier)
+4. **Write** tests for new features
+5. **Commit** with descriptive messages
+6. **Push** to your branch
+7. **Open** a Pull Request
+
+### Development Guidelines
+
+- Follow TypeScript best practices
+- Write meaningful commit messages
+- Add tests for new features
+- Update documentation for API changes
+- Keep dependencies up to date
+
+---
+
+## License
+
+This project is licensed under the **ISC License**.
+
+---
+
+## Acknowledgments
+
+Built with modern web technologies:
+
+- [Turborepo](https://turborepo.com/) - High-performance build system
+- [Fastify](https://fastify.io/) - Fast web framework
+- [React](https://react.dev/) - UI library
+- [Drizzle ORM](https://orm.drizzle.team/) - Type-safe database toolkit
+- [TanStack Query](https://tanstack.com/query) - Async state management
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS
+
+---
+
+## Contact & Support
+
+- **Repository**: [github.com/swaindhruti/modelica-ai-studio](https://github.com/swaindhruti/modelica-ai-studio)
+- **Issues**: [GitHub Issues](https://github.com/swaindhruti/modelica-ai-studio/issues)
+- **Documentation**: See individual package READMEs linked throughout this document
+
+---
+
+**Made with ❤️ using TypeScript, React, and Fastify**

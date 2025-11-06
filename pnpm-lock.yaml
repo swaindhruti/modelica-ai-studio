@@ -60,6 +60,12 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(zod@4.1.12)
     devDependencies:
+      '@eslint/js':
+        specifier: ^9.36.0
+        version: 9.38.0
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
       '@types/bcryptjs':
         specifier: ^3.0.0
         version: 3.0.0
@@ -78,6 +84,12 @@ importers:
       drizzle-kit:
         specifier: ^0.31.6
         version: 0.31.6
+      eslint:
+        specifier: ^9.36.0
+        version: 9.38.0(jiti@2.6.1)
+      globals:
+        specifier: ^15.13.0
+        version: 15.15.0
       jest:
         specifier: ^30.2.0
         version: 30.2.0(@types/node@22.19.0)(esbuild-register@3.6.0(esbuild@0.25.12))
@@ -96,6 +108,9 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+      typescript-eslint:
+        specifier: ^8.45.0
+        version: 8.46.3(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
 
   apps/web-client:
     dependencies:
@@ -2854,6 +2869,10 @@ packages:
 
   globals@14.0.0:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
+    engines: {node: '>=18'}
+
+  globals@15.15.0:
+    resolution: {integrity: sha512-7ACyT3wmyp3I61S4fG682L0VA2RGD9otkqGJIwNUMF1SWUombIIk+af1unuDYgMm082aHYwD+mzJvv9Iu8dsgg==}
     engines: {node: '>=18'}
 
   globals@16.3.0:
@@ -7490,6 +7509,8 @@ snapshots:
       path-is-absolute: 1.0.1
 
   globals@14.0.0: {}
+
+  globals@15.15.0: {}
 
   globals@16.3.0: {}
 

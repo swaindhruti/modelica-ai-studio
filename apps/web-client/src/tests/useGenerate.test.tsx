@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useGenerate } from "../hooks/useGenerate";
 import { generationsApi } from "../lib/api";
 import type { ReactNode } from "react";
+import type { AxiosResponse } from "axios";
 
 // Mock the API
 vi.mock("../lib/api", () => ({
@@ -58,9 +59,9 @@ describe("useGenerate Hook", () => {
 
   it("handleGenerate validates prompt", () => {
     const { result } = renderHook(() => useGenerate(), { wrapper });
-    
+
     result.current.handleGenerate({ prompt: "" });
-    
+
     expect(result.current.generateMutation.isPending).toBe(false);
   });
 
@@ -79,7 +80,11 @@ describe("useGenerate Hook", () => {
 
     vi.mocked(generationsApi.create).mockResolvedValue({
       data: mockGeneration,
-    } as any);
+      status: 201,
+      statusText: "Created",
+      headers: {},
+      config: {} as AxiosResponse["config"],
+    });
 
     const { result } = renderHook(() => useGenerate(), { wrapper });
 
@@ -94,7 +99,7 @@ describe("useGenerate Hook", () => {
 
   it("handles abort/cancel", () => {
     const { result } = renderHook(() => useGenerate(), { wrapper });
-    
+
     // Should not throw error when called
     expect(() => result.current.cancelGenerate()).not.toThrow();
   });
