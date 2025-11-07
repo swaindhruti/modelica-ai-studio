@@ -1,3 +1,4 @@
+````markdown
 # Docker Setup Guide
 
 This guide will help you run the entire Modelia AI Studio stack using Docker Compose.
@@ -7,7 +8,42 @@ This guide will help you run the entire Modelia AI Studio stack using Docker Com
 - Docker (version 20.10 or higher)
 - Docker Compose (version 2.0 or higher)
 
-## Quick Start
+## 🚀 Quick Start (Zero Configuration!)
+
+For testing, you can run everything without any configuration:
+
+```bash
+docker-compose up --build
+```
+
+That's it! The setup will automatically:
+
+- ✅ Start PostgreSQL database
+- ✅ Run database migrations
+- ✅ Start the backend server
+- ✅ Start the frontend web client
+- ✅ Use sensible defaults for all environment variables
+
+### Access the application
+
+- **Web Client:** http://localhost:8080
+- **Backend API:** http://localhost:3000
+- **Database:** localhost:5432 (postgres/postgres)
+
+### What works without configuration:
+
+- ✅ User authentication (JWT)
+- ✅ Creating and managing generations
+- ✅ Database operations
+- ✅ Basic image preview (local only)
+
+### What requires configuration:
+
+- ⚠️ Cloudinary image uploads (will fall back to local preview)
+
+## 📝 Production Setup (with custom configuration)
+
+For production or to enable all features:
 
 1. **Create environment file**
 
@@ -16,26 +52,21 @@ This guide will help you run the entire Modelia AI Studio stack using Docker Com
    ```
 
 2. **Edit `.env` file and set your values:**
-   - `JWT_SECRET`: A secure random string for JWT token signing
-   - `VITE_CLOUDINARY_CLOUD_NAME`: Your Cloudinary cloud name
-   - `VITE_CLOUDINARY_UPLOAD_PRESET`: Your Cloudinary upload preset
+
+   ```bash
+   # Required for production
+   JWT_SECRET=your-secure-random-string-here
+
+   # Optional - for image uploads to Cloudinary
+   VITE_CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
+   VITE_CLOUDINARY_UPLOAD_PRESET=your-cloudinary-upload-preset
+   ```
 
 3. **Build and start all services**
 
    ```bash
    docker-compose up --build
    ```
-
-   Or run in detached mode:
-
-   ```bash
-   docker-compose up -d --build
-   ```
-
-4. **Access the application**
-   - Web Client: http://localhost:8080
-   - Backend API: http://localhost:3000
-   - Database: localhost:5432
 
 ## Services
 
@@ -98,6 +129,10 @@ docker-compose up --build
 ```
 
 ### Run database migrations
+
+**Note:** Migrations now run automatically on server startup! You don't need to run this manually.
+
+If you need to run them manually:
 
 ```bash
 docker-compose exec server pnpm db:push
@@ -177,14 +212,16 @@ docker-compose up --build
 
 ## Environment Variables Reference
 
-| Variable                        | Required | Description                | Default  |
-| ------------------------------- | -------- | -------------------------- | -------- |
-| `JWT_SECRET`                    | Yes      | Secret key for JWT signing | -        |
-| `VITE_CLOUDINARY_CLOUD_NAME`    | Yes      | Cloudinary cloud name      | -        |
-| `VITE_CLOUDINARY_UPLOAD_PRESET` | Yes      | Cloudinary upload preset   | -        |
-| `POSTGRES_USER`                 | No       | Database user              | postgres |
-| `POSTGRES_PASSWORD`             | No       | Database password          | postgres |
-| `POSTGRES_DB`                   | No       | Database name              | modelia  |
+| Variable                        | Required | Description                | Default                                                         |
+| ------------------------------- | -------- | -------------------------- | --------------------------------------------------------------- |
+| `JWT_SECRET`                    | No\*     | Secret key for JWT signing | `test-jwt-secret-key-for-development-only-change-in-production` |
+| `VITE_CLOUDINARY_CLOUD_NAME`    | No       | Cloudinary cloud name      | (optional - uses local preview if not set)                      |
+| `VITE_CLOUDINARY_UPLOAD_PRESET` | No       | Cloudinary upload preset   | (optional - uses local preview if not set)                      |
+| `POSTGRES_USER`                 | No       | Database user              | postgres                                                        |
+| `POSTGRES_PASSWORD`             | No       | Database password          | postgres                                                        |
+| `POSTGRES_DB`                   | No       | Database name              | modelia                                                         |
+
+\*Required for production, but has a default value for testing
 
 ## Network
 
@@ -205,3 +242,4 @@ To restore from backup:
 ```bash
 docker-compose exec -T db psql -U postgres modelia < backup.sql
 ```
+````

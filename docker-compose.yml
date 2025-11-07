@@ -34,7 +34,11 @@ services:
       NODE_ENV: production
       PORT: 3000
       DATABASE_URL: postgresql://postgres:postgres@db:5432/modelia
-      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-this-in-production}
+      JWT_SECRET: ${JWT_SECRET:-test-jwt-secret-key-for-development-only-change-in-production}
+      # Optional Cloudinary settings - not required for testing
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
     ports:
       - "3000:3000"
     healthcheck:
@@ -60,8 +64,9 @@ services:
       - server
     environment:
       VITE_API_URL: http://localhost:3000
-      VITE_CLOUDINARY_CLOUD_NAME: ${VITE_CLOUDINARY_CLOUD_NAME}
-      VITE_CLOUDINARY_UPLOAD_PRESET: ${VITE_CLOUDINARY_UPLOAD_PRESET}
+      # Optional Cloudinary settings - not required for testing
+      VITE_CLOUDINARY_CLOUD_NAME: ${VITE_CLOUDINARY_CLOUD_NAME:-}
+      VITE_CLOUDINARY_UPLOAD_PRESET: ${VITE_CLOUDINARY_UPLOAD_PRESET:-}
     ports:
       - "8080:80"
 

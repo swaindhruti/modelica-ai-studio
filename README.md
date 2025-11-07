@@ -10,6 +10,27 @@ A production-ready full-stack platform for AI-powered image generation. This pro
 
 ---
 
+## 🚀 Quick Start for Testing
+
+Want to test the application immediately without any setup? Use Docker:
+
+```bash
+docker-compose up --build
+```
+
+Then open http://localhost:8080 in your browser. That's it!
+
+- ✅ No environment files needed
+- ✅ No manual configuration
+- ✅ Migrations run automatically
+- ✅ Everything works out of the box
+
+**For detailed testing guide, see [TESTING.md](TESTING.md)**
+
+**For Docker setup details, see [README.docker.md](README.docker.md)**
+
+---
+
 ## Architecture Overview
 
 This monorepo follows a **separation of concerns** architecture pattern with clear boundaries between presentation, business logic, and data layers.
@@ -624,6 +645,42 @@ This application implements industry-standard security practices:
 - Ensure file is JPEG or PNG
 
 [→ Complete troubleshooting guide](./DOCKER_SETUP.md)
+
+---
+
+## 📋 Evaluation Checklist
+
+For candidates completing this as an assessment, please fill out the [EVAL.md](./EVAL.md) template:
+
+### Required Deliverables
+
+| Deliverable      | Description                       | Status                                        |
+| ---------------- | --------------------------------- | --------------------------------------------- |
+| **README.md**    | Setup, run, and test instructions | [✓] This file                                 |
+| **EVAL.md**      | Completed feature checklist       | [→ See template](./EVAL.md)                   |
+| **OPENAPI.yaml** | Backend API specification         | [→ View spec](./apps/server/OPENAPI.yaml)     |
+| **AI_USAGE.md**  | Documentation of AI tool usage    | [→ View details](./AI_USAGE.md)               |
+| **CI Workflow**  | GitHub Actions with tests         | [→ View workflow](./.github/workflows/ci.yml) |
+
+### Feature Implementation Checklist
+
+Candidates must complete the `EVAL.md` file with this structure:
+
+| Feature/Test             | Status | File/Path                                       |
+| ------------------------ | ------ | ----------------------------------------------- |
+| JWT Auth (signup/login)  | ✅/❌  | `/apps/server/src/routes/auth.ts`               |
+| Image upload preview     | ✅/❌  | `/apps/web-client/src/hooks/useImageUpload.ts`  |
+| Abort in-flight requests | ✅/❌  | `/apps/web-client/src/pages/StudioPage.tsx`     |
+| Exponential retry logic  | ✅/❌  | `/apps/web-client/src/hooks/useGenerations.ts`  |
+| 20% simulated overload   | ✅/❌  | `/apps/server/src/routes/generations.ts`        |
+| GET last 5 generations   | ✅/❌  | `/apps/server/src/routes/generations.ts`        |
+| Unit tests backend       | ✅/❌  | `/apps/server/src/__tests__/*.test.ts`          |
+| Unit tests frontend      | ✅/❌  | `/apps/web-client/src/tests/*.test.tsx`         |
+| E2E flow                 | ✅/❌  | `/playwright-report/index.html`                 |
+| ESLint + Prettier        | ✅/❌  | `/eslint.config.js`, `/packages/eslint-config/` |
+| CI + Coverage            | ✅/❌  | `/.github/workflows/ci.yml`                     |
+
+**📝 Note**: Copy the [EVAL.md template](./EVAL.md) and fill in your implementation details, test coverage, and any additional notes.
 
 ---
 

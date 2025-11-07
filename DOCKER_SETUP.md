@@ -1,20 +1,50 @@
 # Docker Setup Complete! 🐳
 
+## 🚀 Zero-Config Quick Start for Testing
+
+Want to test immediately without any setup? Just run:
+
+```bash
+docker-compose up --build
+```
+
+That's it! Everything will work automatically:
+
+- ✅ Database starts and becomes ready
+- ✅ Migrations run automatically
+- ✅ Server starts on port 3000
+- ✅ Frontend starts on port 8080
+- ✅ No `.env` file needed for testing!
+
+**Access the application:**
+
+- **Frontend**: http://localhost:8080
+- **Backend API**: http://localhost:3000/health
+- **Database**: localhost:5432
+
 ## What Was Created
 
-I've set up a complete Docker environment for your Modelia AI Studio project:
+I've set up a complete Docker environment for your Modelia AI Studio project with zero-configuration testing support:
 
 ### Files Created:
 
-1. **`docker-compose.yml`** - Main orchestration file for all services
+1. **`docker-compose.yml`** - Main orchestration file with sensible defaults
 2. **`apps/server/Dockerfile`** - Backend server container
-3. **`apps/web-client/Dockerfile`** - Frontend web client container
-4. **`apps/web-client/nginx.conf`** - Nginx configuration for serving the frontend
-5. **`.dockerignore`** - Files to exclude from Docker builds
-6. **`.env.example`** - Template for environment variables
-7. **`.env`** - Your actual environment file (edit this!)
+3. **`apps/server/start.sh`** - Startup script that runs migrations automatically
+4. **`apps/web-client/Dockerfile`** - Frontend web client container
+5. **`apps/web-client/nginx.conf`** - Nginx configuration for serving the frontend
+6. **`.dockerignore`** - Files to exclude from Docker builds
+7. **`.env.example`** - Template for optional environment variables
 8. **`docker.sh`** - Helper script for common Docker commands
 9. **`README.docker.md`** - Comprehensive Docker documentation
+
+### Key Features:
+
+- 🎯 **Zero Configuration**: Works out of the box without any `.env` file
+- 🔄 **Auto Migrations**: Database migrations run automatically on startup
+- 🔧 **Sensible Defaults**: Pre-configured with test-ready values
+- 📦 **Self-Contained**: Everything runs in Docker - no local dependencies
+- 🌐 **Optional Cloudinary**: Falls back to local image preview if not configured
 
 ## Architecture
 
@@ -41,17 +71,29 @@ I've set up a complete Docker environment for your Modelia AI Studio project:
 
 ## Quick Start
 
-### 1. Edit Environment Variables
+### Testing (No Configuration Required)
 
 ```bash
+# Just run this - everything works automatically!
+docker-compose up --build
+```
+
+### Production (Custom Configuration)
+
+### 1. Edit Environment Variables (Optional for Testing)
+
+For production or to enable Cloudinary uploads, create a `.env` file:
+
+```bash
+cp .env.example .env
 nano .env
 ```
 
-Set these required variables:
+Set these variables for production:
 
-- `JWT_SECRET=your-secret-key-change-this` (generate a random string)
-- `VITE_CLOUDINARY_CLOUD_NAME=your-cloud-name` (if using Cloudinary)
-- `VITE_CLOUDINARY_UPLOAD_PRESET=your-preset` (if using Cloudinary)
+- `JWT_SECRET=your-secret-key-change-this` (generate a secure random string)
+- `VITE_CLOUDINARY_CLOUD_NAME=your-cloud-name` (optional - for image uploads)
+- `VITE_CLOUDINARY_UPLOAD_PRESET=your-preset` (optional - for image uploads)
 
 ### 2. Start Everything
 
@@ -69,7 +111,11 @@ chmod +x docker.sh
 - **Backend API**: http://localhost:3000/health
 - **Database**: localhost:5432
 
-### 4. Run Database Migrations
+### 4. Migrations
+
+**Migrations run automatically on server startup!** You don't need to do anything.
+
+If you need to run them manually for some reason:
 
 ```bash
 ./docker.sh migrate

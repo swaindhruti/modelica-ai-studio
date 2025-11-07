@@ -19,8 +19,12 @@ RUN pnpm install --frozen-lockfile
 WORKDIR /app/apps/server
 RUN pnpm build
 
+# Copy startup script
+COPY apps/server/start.sh /app/apps/server/start.sh
+RUN chmod +x /app/apps/server/start.sh
+
 # Expose port
 EXPOSE 3000
 
-# Start the server
-CMD ["pnpm", "start"]
+# Start the server with migrations
+CMD ["/app/apps/server/start.sh"]

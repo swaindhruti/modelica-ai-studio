@@ -39,7 +39,26 @@ export function useImageUpload(): UseImageUploadReturn {
         .VITE_CLOUDINARY_UPLOAD_PRESET as string;
 
       if (!cloudName || !uploadPreset) {
-        throw new Error("Cloudinary configuration is missing");
+        // For testing without Cloudinary, just create a local preview
+        console.warn(
+          "Cloudinary configuration is missing. Using local preview only."
+        );
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = reader.result as string;
+          setImageUrl(result);
+          setImagePreview(result);
+          toast.success(
+            "Image loaded (local preview only - Cloudinary not configured)"
+          );
+          setIsUploading(false);
+        };
+        reader.onerror = () => {
+          toast.error("Failed to read image file");
+          setIsUploading(false);
+        };
+        reader.readAsDataURL(file);
+        return;
       }
 
       const formData = new FormData();
