@@ -6,7 +6,7 @@ This document details how AI tools were used during the development of the Model
 
 **Primary AI Assistant:** Claude 4.5 Sonnet (via GitHub Copilot)
 
-**Access:** GitHub Copilot Pro subscription
+**Access:** GitHub Copilot Pro subscription - Student plan
 
 **Usage Period:** Throughout the entire project development lifecycle
 

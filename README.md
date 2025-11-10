@@ -25,9 +25,15 @@ Then open http://localhost:8080 in your browser. That's it!
 - ✅ Migrations run automatically
 - ✅ Everything works out of the box
 
-**For detailed testing guide, see [TESTING.md](TESTING.md)**
+**📚 Documentation:**
 
-**For Docker setup details, see [README.docker.md](README.docker.md)**
+- [Server README](./apps/server/README.md) - Backend API documentation
+- [Client README](./apps/web-client/README.md) - Frontend application documentation
+- [TESTING.md](TESTING.md) - Comprehensive testing guide
+- [QUICKSTART.md](QUICKSTART.md) - Fast setup for development
+- [DOCKER_SETUP.md](DOCKER_SETUP.md) - Docker configuration and troubleshooting
+- [README.docker.md](README.docker.md) - Detailed Docker documentation
+- [AI_USAGE.md](AI_USAGE.md) - AI tools usage transparency
 
 ---
 
@@ -97,7 +103,6 @@ We use **Turborepo** for efficient builds, caching, and parallel task execution:
 - **Multi-Style Support**: 5 distinct generation styles (photorealistic, cartoon, pixel art, anime, oil painting)
 - **Concurrent Request Handling**: Queue management for model overload scenarios
 - **Retry Mechanism**: Exponential backoff for transient failures (503 errors)
-- **Real-time Status Updates**: WebSocket-ready architecture (currently polling-based)
 
 [→ Read generation pipeline details](./apps/server/README.md#generation-architecture)
 

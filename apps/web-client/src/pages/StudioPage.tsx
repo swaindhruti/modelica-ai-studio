@@ -116,10 +116,10 @@ export function StudioPage() {
         <div
           className={`mb-12 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
         >
-          <h1 className="text-4xl md:text-5xl font-medium text-black mb-4 tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-medium text-black dark:text-white mb-4 tracking-tight">
             AI Fashion Studio
           </h1>
-          <p className="text-lg text-zinc-700 max-w-2xl">
+          <p className="text-lg text-zinc-700 dark:text-zinc-300 max-w-2xl">
             Create stunning fashion model images with AI. Upload a reference
             image or describe your vision.
           </p>
@@ -128,16 +128,16 @@ export function StudioPage() {
         <div className="space-y-8">
           {/* Main generation form */}
           <div
-            className={`bg-white border-2 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-700 delay-200 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+            className={`bg-white dark:bg-zinc-800 border-2 border-black dark:border-zinc-600 p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(63,63,70,1)] transition-all duration-700 delay-200 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
           >
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-semibold text-black tracking-tight">
+              <h2 className="text-2xl font-semibold text-black dark:text-white tracking-tight">
                 Create Generation
               </h2>
               <button
                 type="button"
                 onClick={handleClearForm}
-                className="text-sm font-semibold text-zinc-600 hover:text-black transition-colors"
+                className="text-sm font-semibold text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
               >
                 Clear Form
               </button>
@@ -155,7 +155,7 @@ export function StudioPage() {
               <div>
                 <label
                   htmlFor="prompt"
-                  className="block text-sm font-semibold text-black mb-2"
+                  className="block text-sm font-semibold text-black dark:text-white mb-2"
                 >
                   Prompt *
                 </label>
@@ -167,14 +167,14 @@ export function StudioPage() {
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder="Describe what you want to generate..."
-                  className="w-full px-4 py-3 text-base border-2 border-zinc-200 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-colors resize-none"
+                  className="w-full px-4 py-3 text-base bg-white dark:bg-zinc-700 text-black dark:text-white border-2 border-zinc-200 dark:border-zinc-600 focus:outline-none focus:border-green-500 dark:focus:border-green-400 focus:ring-2 focus:ring-green-500/20 dark:focus:ring-green-400/20 transition-colors resize-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="style"
-                  className="block text-sm font-semibold text-black mb-2"
+                  className="block text-sm font-semibold text-black dark:text-white mb-2"
                 >
                   Style
                 </label>
@@ -183,7 +183,7 @@ export function StudioPage() {
                   name="style"
                   value={style}
                   onChange={(e) => setStyle(e.target.value)}
-                  className="w-full px-4 py-3 text-base border-2 border-zinc-200 focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-colors bg-white"
+                  className="w-full px-4 py-3 text-base bg-white dark:bg-zinc-700 text-black dark:text-white border-2 border-zinc-200 dark:border-zinc-600 focus:outline-none focus:border-green-500 dark:focus:border-green-400 focus:ring-2 focus:ring-green-500/20 dark:focus:ring-green-400/20 transition-colors"
                 >
                   {STYLES.map((s) => (
                     <option key={s.value} value={s.value}>
@@ -266,15 +266,15 @@ export function StudioPage() {
           {/* Latest Generation Result */}
           {latestGeneration && (
             <div
-              className={`bg-green-500 border-2 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+              className={`bg-green-500 dark:bg-green-600 border-2 border-black dark:border-zinc-600 p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(63,63,70,1)] transition-all duration-500 ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-semibold text-black tracking-tight">
+                <h3 className="text-2xl font-semibold text-black dark:text-white tracking-tight">
                   ✨ Latest Generation
                 </h3>
                 <button
                   onClick={() => setLatestGeneration(null)}
-                  className="text-black hover:opacity-70 font-bold"
+                  className="text-black dark:text-white hover:opacity-70 font-bold"
                   aria-label="Close result"
                 >
                   <svg
@@ -298,18 +298,18 @@ export function StudioPage() {
                   <img
                     src={latestGeneration.imageUrl}
                     alt={latestGeneration.prompt}
-                    className="w-full border-2 border-black"
+                    className="w-full border-2 border-black dark:border-zinc-700"
                   />
-                  <div className="text-sm text-black bg-white border-2 border-black p-4">
+                  <div className="text-sm text-black dark:text-white bg-white dark:bg-zinc-800 border-2 border-black dark:border-zinc-600 p-4">
                     <p className="font-semibold mb-1">Prompt:</p>
                     <p className="italic">{latestGeneration.prompt}</p>
                   </div>
-                  <div className="text-sm font-semibold text-black bg-white border-2 border-black px-4 py-2 inline-block">
+                  <div className="text-sm font-semibold text-black dark:text-white bg-white dark:bg-zinc-800 border-2 border-black dark:border-zinc-600 px-4 py-2 inline-block">
                     Style: {latestGeneration.style}
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-8 text-black font-semibold">
+                <div className="text-center py-8 text-black dark:text-white font-semibold">
                   <p>Generation completed but no image was created.</p>
                 </div>
               )}
@@ -318,7 +318,7 @@ export function StudioPage() {
 
           {/* Recent Generations History */}
           <div
-            className={`bg-white border-2 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-700 delay-400 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+            className={`bg-white dark:bg-zinc-800 border-2 border-black dark:border-zinc-600 p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(63,63,70,1)] transition-all duration-700 delay-400 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
           >
             <GenerationHistory
               generations={generations}

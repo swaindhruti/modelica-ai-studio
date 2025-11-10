@@ -59,7 +59,7 @@ export function ImageUpload({ onImageSelect, preview }: ImageUploadProps) {
     <div>
       <label
         htmlFor="image-upload"
-        className="block text-sm font-semibold text-black mb-2"
+        className="block text-sm font-semibold text-black dark:text-white mb-2"
       >
         Upload Image (Optional)
       </label>
@@ -76,10 +76,10 @@ export function ImageUpload({ onImageSelect, preview }: ImageUploadProps) {
           transition-all duration-200
           ${
             isDragging
-              ? "border-green-500 bg-green-50"
-              : "border-zinc-300 hover:border-green-500"
+              ? "border-green-500 dark:border-green-400 bg-green-50 dark:bg-green-900/20"
+              : "border-zinc-300 dark:border-zinc-600 hover:border-green-500 dark:hover:border-green-400"
           }
-          ${preview ? "bg-zinc-50" : "bg-white"}
+          ${preview ? "bg-zinc-50 dark:bg-zinc-800/50" : "bg-white dark:bg-zinc-800"}
         `}
       >
         <input
@@ -98,16 +98,16 @@ export function ImageUpload({ onImageSelect, preview }: ImageUploadProps) {
             <img
               src={preview}
               alt="Preview"
-              className="max-h-48 mx-auto border-2 border-black"
+              className="max-h-48 mx-auto border-2 border-black dark:border-zinc-600"
             />
-            <p className="text-sm text-zinc-600 font-medium">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 font-medium">
               Click or drag to change image
             </p>
           </div>
         ) : (
           <div className="space-y-3">
             <svg
-              className="mx-auto h-12 w-12 text-zinc-400"
+              className="mx-auto h-12 w-12 text-zinc-400 dark:text-zinc-500"
               stroke="currentColor"
               fill="none"
               viewBox="0 0 48 48"
@@ -120,13 +120,13 @@ export function ImageUpload({ onImageSelect, preview }: ImageUploadProps) {
                 strokeLinejoin="round"
               />
             </svg>
-            <div className="text-sm text-zinc-700 font-medium">
-              <span className="font-semibold text-green-500">
+            <div className="text-sm text-zinc-700 dark:text-zinc-300 font-medium">
+              <span className="font-semibold text-green-500 dark:text-green-400">
                 Click to upload
               </span>{" "}
               or drag and drop
             </div>
-            <p className="text-xs text-zinc-600 font-medium">
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">
               PNG or JPEG up to 10MB (will be resized to 512x512)
             </p>
           </div>

@@ -106,14 +106,14 @@ export function GenerationHistory({
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-black tracking-tight">
+        <h2 className="text-xl font-semibold text-black dark:text-white tracking-tight">
           Recent Generations
         </h2>
         <div className="flex gap-6 overflow-hidden">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="animate-pulse bg-zinc-200 border-2 border-zinc-300 flex-shrink-0"
+              className="animate-pulse bg-zinc-200 dark:bg-zinc-700 border-2 border-zinc-300 dark:border-zinc-600 flex-shrink-0"
               style={{ width: "280px", height: "380px" }}
             />
           ))}
@@ -125,11 +125,11 @@ export function GenerationHistory({
   if (generations.length === 0) {
     return (
       <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-black tracking-tight">
+        <h2 className="text-xl font-semibold text-black dark:text-white tracking-tight">
           Recent Generations
         </h2>
-        <div className="bg-zinc-50 border-2 border-zinc-200 p-12 text-center">
-          <p className="text-sm text-zinc-600 font-medium">
+        <div className="bg-zinc-50 dark:bg-zinc-800 border-2 border-zinc-200 dark:border-zinc-600 p-12 text-center">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 font-medium">
             No generations yet. Create your first one!
           </p>
         </div>
@@ -140,7 +140,7 @@ export function GenerationHistory({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-black tracking-tight">
+        <h2 className="text-xl font-semibold text-black dark:text-white tracking-tight">
           Recent Generations
         </h2>
 
@@ -150,11 +150,11 @@ export function GenerationHistory({
             <button
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className="w-11 h-11 flex items-center justify-center bg-green-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+              className="w-11 h-11 flex items-center justify-center bg-green-500 dark:bg-green-600 border-2 border-black dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(63,63,70,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(63,63,70,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:disabled:hover:shadow-[4px_4px_0px_0px_rgba(63,63,70,1)]"
               aria-label="Previous"
             >
               <svg
-                className="w-5 h-5 text-black"
+                className="w-5 h-5 text-black dark:text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -170,11 +170,11 @@ export function GenerationHistory({
             <button
               onClick={handleNext}
               disabled={currentIndex >= maxIndex}
-              className="w-11 h-11 flex items-center justify-center bg-green-500 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+              className="w-11 h-11 flex items-center justify-center bg-green-500 dark:bg-green-600 border-2 border-black dark:border-zinc-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(63,63,70,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(63,63,70,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:disabled:hover:shadow-[4px_4px_0px_0px_rgba(63,63,70,1)]"
               aria-label="Next"
             >
               <svg
-                className="w-5 h-5 text-black"
+                className="w-5 h-5 text-black dark:text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -205,7 +205,7 @@ export function GenerationHistory({
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="relative bg-white border-2 border-black hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-150 flex-shrink-0"
+                className="relative bg-white dark:bg-zinc-800 border-2 border-black dark:border-zinc-600 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(63,63,70,1)] transition-all duration-150 flex-shrink-0"
                 style={{
                   width: `calc((100% - ${(itemsPerView - 1) * 24}px) / ${itemsPerView})`,
                 }}
@@ -215,47 +215,47 @@ export function GenerationHistory({
                     <img
                       src={generation.imageUrl}
                       alt={generation.prompt}
-                      className="w-full h-full border-b-2 border-black object-cover"
+                      className="w-full h-full border-b-2 border-black dark:border-zinc-600 object-cover"
                     />
                   </div>
                 )}
 
                 <div className="p-4">
-                  <p className="text-sm font-semibold text-black line-clamp-2 mb-3">
+                  <p className="text-sm font-semibold text-black dark:text-white line-clamp-2 mb-3">
                     {generation.prompt}
                   </p>
                   <div className="flex flex-wrap items-center gap-2 mb-3">
                     {generation.style && (
-                      <span className="inline-flex items-center px-2 py-1 text-xs font-bold bg-yellow-300 border border-black">
+                      <span className="inline-flex items-center px-2 py-1 text-xs font-bold bg-yellow-300 dark:bg-yellow-400 text-black border border-black dark:border-zinc-700">
                         {generation.style}
                       </span>
                     )}
-                    <span className="text-xs text-zinc-600 font-medium">
+                    <span className="text-xs text-zinc-600 dark:text-zinc-400 font-medium">
                       {new Date(generation.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
 
                 {/* Action buttons */}
-                <div className="flex border-t-2 border-black">
+                <div className="flex border-t-2 border-black dark:border-zinc-600">
                   <button
                     onClick={(e) => handleView(e, generation)}
                     disabled={deletingId === generation.id}
-                    className="flex-1 px-3 py-2 text-xs font-semibold text-black hover:bg-green-500 transition-colors border-r-2 border-black disabled:opacity-50"
+                    className="flex-1 px-3 py-2 text-xs font-semibold text-black dark:text-white hover:bg-green-500 dark:hover:bg-green-600 transition-colors border-r-2 border-black dark:border-zinc-600 disabled:opacity-50"
                   >
                     View
                   </button>
                   <button
                     onClick={() => onRestore(generation)}
                     disabled={deletingId === generation.id}
-                    className="flex-1 px-3 py-2 text-xs font-semibold text-black hover:bg-yellow-300 transition-colors border-r-2 border-black disabled:opacity-50"
+                    className="flex-1 px-3 py-2 text-xs font-semibold text-black dark:text-white hover:bg-yellow-300 dark:hover:bg-yellow-500 transition-colors border-r-2 border-black dark:border-zinc-600 disabled:opacity-50"
                   >
                     Restore
                   </button>
                   <button
                     onClick={(e) => handleDelete(e, generation.id)}
                     disabled={deletingId === generation.id}
-                    className="flex-1 px-3 py-2 text-xs font-semibold text-black hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50"
+                    className="flex-1 px-3 py-2 text-xs font-semibold text-black dark:text-white hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50"
                   >
                     {deletingId === generation.id ? "..." : "Delete"}
                   </button>
@@ -273,10 +273,10 @@ export function GenerationHistory({
             <button
               key={index}
               onClick={() => scrollTo(index)}
-              className={`w-3 h-3 border-2 border-black transition-all duration-150 ${
+              className={`w-3 h-3 border-2 border-black dark:border-zinc-600 transition-all duration-150 ${
                 currentIndex === index
-                  ? "bg-yellow-300 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                  : "bg-white hover:bg-zinc-200"
+                  ? "bg-yellow-300 dark:bg-yellow-500 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(63,63,70,1)]"
+                  : "bg-white dark:bg-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-600"
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />

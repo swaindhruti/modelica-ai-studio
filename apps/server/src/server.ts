@@ -35,6 +35,7 @@ export async function build(
   const allowedOrigins = [
     "https://modelica-ai-atudio.netlify.app", // Production
     "http://localhost:5173", // Local Vite/React dev server
+    "http://localhost:8080", // Docker web client
   ];
 
   await fastify.register(cors, {
@@ -108,6 +109,6 @@ async function start() {
 }
 
 // Start server only if not in test environment
-if (process.env.NODE_ENV !== "test") {
+if (env.NODE_ENV !== "test") {
   start();
 }
